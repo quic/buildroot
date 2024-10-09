@@ -1,0 +1,6 @@
+# From https://artifacts.codelinaro.org/artifactory/codelinaro-toolchain-for-hexagon/19.1.2/SHA256SUMS:
+sha256  082ce7e7b2955a79be4198123a6ff743fddaed6e2da4f0a1974f0153478fb372  clang+llvm-19.1.2-cross-hexagon-unknown-linux-musl.tar.xz
+sha256  c06958b1a6d73e32cc3fc08b5ec15ea3e1f41180defe3142c91e06e05ad70f0b  clang+llvm-19.1.2-cross-hexagon-unknown-linux-musl_aarch64-linux-gnu.tar.xz
+sha256  2c91bcca2d1645987723af7916184f81f287b7b94ab837dd429c8233899ce54d  clang+llvm-19.1.2-cross-hexagon-unknown-linux-musl_aarch64-windows-gnu.tar.xz
+sha256  1e5ef2a070255a917acbce644d4977fc0c19f82105c375f5260bb573cd4bbf0f  clang+llvm-19.1.2-cross-hexagon-unknown-linux-musl_x86_64-linux-musl.tar.xz
+sha256  f758e9e19ceac201ddd869a9aff6ffe623339e91329f7daf90960cf6218af278  clang+llvm-19.1.2-cross-hexagon-unknown-linux-musl_x86_64-windows-gnu.tar.xz
