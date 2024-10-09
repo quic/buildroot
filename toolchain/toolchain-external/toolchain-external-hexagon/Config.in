@@ -1,0 +1,8 @@
+comment "Toolchains available for Hexagon DSP"
+
+config BR2_TOOLCHAIN_EXTERNAL_HEXAGON
+	bool "Clang/LLVM Hexagon Toolchain"
+	depends on BR2_HOSTARCH = "x86_64" || "aarch64"
+	select BR2_TOOLCHAIN_EXTERNAL_CLANG
+	select BR2_TOOLCHAIN_EXTERNAL_MUSL
+
