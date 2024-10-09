@@ -1,0 +1,63 @@
+# hexagon cpu features
+config BR2_HEXAGON_CPU_HAS_HVX
+	bool
+
+choice
+	prompt "Target Architecture Variant"
+	default BR2_HEXAGON_v65
+	help
+	  Specific CPU variant to use
+
+config BR2_HEXAGON_v5
+	bool "v5"
+config BR2_HEXAGON_v55
+	bool "v55"
+config BR2_HEXAGON_v60
+	bool "v60"
+	select BR2_HEXAGON_CPU_HAS_HVX
+config BR2_HEXAGON_v61
+	bool "v61"
+config BR2_HEXAGON_v62
+	bool "v62"
+	select BR2_HEXAGON_CPU_HAS_HVX
+config BR2_HEXAGON_v65
+	bool "v65"
+	select BR2_HEXAGON_CPU_HAS_HVX
+config BR2_HEXAGON_v66
+	bool "v66"
+	select BR2_HEXAGON_CPU_HAS_HVX
+config BR2_HEXAGON_v68
+	bool "v68"
+	select BR2_HEXAGON_CPU_HAS_HVX
+config BR2_HEXAGON_v69
+	bool "v69"
+	select BR2_HEXAGON_CPU_HAS_HVX
+config BR2_HEXAGON_v71
+	bool "v71"
+	select BR2_HEXAGON_CPU_HAS_HVX
+config BR2_HEXAGON_v73
+	bool "v73"
+	select BR2_HEXAGON_CPU_HAS_HVX
+endchoice
+
+config BR2_ARCH
+	default "hexagon"
+
+config BR2_ENDIAN
+	default "LITTLE"
+
+config BR2_READELF_ARCH_NAME
+	default "Qualcomm Hexagon"
+
+config BR2_GCC_TARGET_CPU
+	default "hexagonv5"	if BR2_HEXAGON_v5
+	default "hexagonv55"	if BR2_HEXAGON_v55
+	default "hexagonv60"	if BR2_HEXAGON_v60
+	default "hexagonv61"	if BR2_HEXAGON_v61
+	default "hexagonv62"	if BR2_HEXAGON_v62
+	default "hexagonv65"	if BR2_HEXAGON_v65
+	default "hexagonv66"	if BR2_HEXAGON_v66
+	default "hexagonv68"	if BR2_HEXAGON_v68
+	default "hexagonv69"	if BR2_HEXAGON_v69
+	default "hexagonv71"	if BR2_HEXAGON_v71
+	default "hexagonv73"	if BR2_HEXAGON_v73
