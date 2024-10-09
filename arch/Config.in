@@ -251,6 +251,12 @@ config BR2_xtensa
 	  http://en.wikipedia.org/wiki/Xtensa
 	  http://www.tensilica.com/
 
+config BR2_hexagon
+	bool "Hexagon"
+	select BR2_USE_MMU
+	help
+	  Hexagon is a Qualcomm DSP processor.
+
 endchoice
 
 # For some architectures or specific cores, our internal toolchain
@@ -420,6 +426,10 @@ endif
 
 if BR2_xtensa
 source "arch/Config.in.xtensa"
+endif
+
+if BR2_hexagon
+source "arch/Config.in.hexagon"
 endif
 
 # Set up target binary format
