@@ -1,0 +1,14 @@
+
+if BR2_TOOLCHAIN_EXTERNAL_HEXAGON
+
+config BR2_TOOLCHAIN_EXTERNAL_PREFIX
+	default "hexagon-unknown-linux-musl"
+
+config BR2_PACKAGE_PROVIDES_TOOLCHAIN_EXTERNAL
+	default "toolchain-external-hexagon"
+
+# This feature is not well-tested:
+config BR2_TOOLCHAIN_SUPPORTS_PIE
+	default "n"
+
+endif
