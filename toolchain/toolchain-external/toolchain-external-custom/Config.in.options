@@ -41,7 +41,24 @@ config BR2_TOOLCHAIN_EXTERNAL_CUSTOM_PREFIX
 	  as external toolchain.
 
 choice
+	bool "External toolchain Compiler"
+	default BR2_TOOLCHAIN_EXTERNAL_GCC
+	help
+	  Select between gcc and clang
+
+config BR2_TOOLCHAIN_EXTERNAL_GCC
+	bool "gcc"
+	select BR2_TOOLCHAIN_USES_GCC
+
+config BR2_TOOLCHAIN_EXTERNAL_CLANG
+	bool "clang"
+	select BR2_TOOLCHAIN_USES_CLANG
+
+endchoice
+
+choice
 	bool "External toolchain gcc version"
+	depends on BR2_TOOLCHAIN_EXTERNAL_GCC
 	help
 	  Set to the gcc version that is used by your external
 	  toolchain.
@@ -145,6 +162,68 @@ endchoice
 
 comment "GCC older than 4.8 is not tested by Buildroot. Use at your own risk."
 	depends on !BR2_TOOLCHAIN_GCC_AT_LEAST_4_8
+
+choice
+	bool "External toolchain clang version"
+	default BR2_TOOLCHAIN_EXTERNAL_CLANG_4_0
+	depends on BR2_TOOLCHAIN_EXTERNAL_CLANG
+	help
+	  Set to the clang version that is used by your external
+	  toolchain.
+
+config BR2_TOOLCHAIN_EXTERNAL_CLANG_4_0
+	bool "4.0"
+	select BR2_TOOLCHAIN_CLANG_AT_LEAST_4_0
+config BR2_TOOLCHAIN_EXTERNAL_CLANG_5_0
+	bool "5.0"
+	select BR2_TOOLCHAIN_CLANG_AT_LEAST_5_0
+config BR2_TOOLCHAIN_EXTERNAL_CLANG_6_0
+	bool "6.0"
+	select BR2_TOOLCHAIN_CLANG_AT_LEAST_6_0
+config BR2_TOOLCHAIN_EXTERNAL_CLANG_7_0
+	bool "7.0"
+	select BR2_TOOLCHAIN_CLANG_AT_LEAST_7_0
+config BR2_TOOLCHAIN_EXTERNAL_CLANG_9_0
+	bool "9.0"
+	select BR2_TOOLCHAIN_CLANG_AT_LEAST_9_0
+config BR2_TOOLCHAIN_EXTERNAL_CLANG_10_0
+	bool "10.0"
+	select BR2_TOOLCHAIN_CLANG_AT_LEAST_10_0
+config BR2_TOOLCHAIN_EXTERNAL_CLANG_11_0
+	bool "11.0"
+	select BR2_TOOLCHAIN_CLANG_AT_LEAST_11_0
+config BR2_TOOLCHAIN_EXTERNAL_CLANG_12_0
+	bool "12.0"
+	select BR2_TOOLCHAIN_CLANG_AT_LEAST_12_0
+config BR2_TOOLCHAIN_EXTERNAL_CLANG_13_0
+	bool "13.0"
+	select BR2_TOOLCHAIN_CLANG_AT_LEAST_13_0
+config BR2_TOOLCHAIN_EXTERNAL_CLANG_14_0
+	bool "14.0"
+	select BR2_TOOLCHAIN_CLANG_AT_LEAST_14_0
+config BR2_TOOLCHAIN_EXTERNAL_CLANG_15_0
+	bool "15.0"
+	select BR2_TOOLCHAIN_CLANG_AT_LEAST_15_0
+config BR2_TOOLCHAIN_EXTERNAL_CLANG_16_0
+	bool "16.0"
+	select BR2_TOOLCHAIN_CLANG_AT_LEAST_16_0
+config BR2_TOOLCHAIN_EXTERNAL_CLANG_17_0
+	bool "17.0"
+	select BR2_TOOLCHAIN_CLANG_AT_LEAST_17_0
+config BR2_TOOLCHAIN_EXTERNAL_CLANG_18_0
+	bool "18.0"
+	select BR2_TOOLCHAIN_CLANG_AT_LEAST_18_0
+config BR2_TOOLCHAIN_EXTERNAL_CLANG_19_0
+	bool "19.0"
+	select BR2_TOOLCHAIN_CLANG_AT_LEAST_19_0
+config BR2_TOOLCHAIN_EXTERNAL_CLANG_20_0
+	bool "20.0"
+	select BR2_TOOLCHAIN_CLANG_AT_LEAST_20_0
+config BR2_TOOLCHAIN_EXTERNAL_CLANG_21_0
+	bool "21.0"
+	select BR2_TOOLCHAIN_CLANG_AT_LEAST_21_0
+
+endchoice
 
 choice
 	bool "External toolchain kernel headers series"

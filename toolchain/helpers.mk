@@ -224,6 +224,22 @@ check_glibc_rpc_feature = \
 		exit 1 ; \
 	fi
 
+check_clang_version = \
+	expected_version="$(strip $2)" ; \
+	exit 0; \
+	real_version=`$(TOOLCHAIN_EXTERNAL_BIN)/llvm-config --version;`; \
+	if [ -z "$${expected_version}" ]; then \
+		printf "Internal error, __$${2}__ vs __$${expected_version}__ clang version unknown (no CLANG_AT_LEAST_X_Y selected)\n"; \
+		printf "real ver: __$${real_version}__\n"; \
+		exit 1 ; \
+	fi; \
+	real_version=`$(TOOLCHAIN_EXTERNAL_BIN)/$(TOOLCHAIN_EXTERNAL_PREFIX)-llvm-config --version;`; \
+	if [[ ! "$${real_version}" =~ ^$${expected_version}\. ]] ; then \
+	printf "Incorrect selection of clang version: expected %s.x, got %s\n" \
+			"$${expected_version}" "$${real_version}" ; \
+		exit 1 ; \
+	fi
+
 #
 # Check the correctness of a glibc external toolchain configuration.
 #  1. Check that the C library selected in Buildroot matches the one
