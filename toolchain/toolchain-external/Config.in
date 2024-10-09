@@ -20,6 +20,9 @@ source "toolchain/toolchain-external/toolchain-external-synopsys-arc/Config.in"
 # ARM (use ARM toolchain by default)
 source "toolchain/toolchain-external/toolchain-external-arm-arm/Config.in"
 
+# Hexagon
+source "toolchain/toolchain-external/toolchain-external-hexagon/Config.in"
+
 # Bootlin toolchains, available for virtually all architectures
 source "toolchain/toolchain-external/toolchain-external-bootlin/Config.in"
 
@@ -107,6 +110,9 @@ source "toolchain/toolchain-external/toolchain-external-synopsys-arc/Config.in.o
 
 # ARM
 source "toolchain/toolchain-external/toolchain-external-arm-arm/Config.in.options"
+
+# Hexagon
+source "toolchain/toolchain-external/toolchain-external-hexagon/Config.in.options"
 
 # Bootlin toolchains
 source "toolchain/toolchain-external/toolchain-external-bootlin/Config.in.options"
