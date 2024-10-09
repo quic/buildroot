@@ -29,6 +29,9 @@ source "toolchain/toolchain-external/toolchain-external-linaro-armeb/Config.in"
 # MIPS
 source "toolchain/toolchain-external/toolchain-external-codesourcery-mips/Config.in"
 
+# Hexagon
+source "toolchain/toolchain-external/toolchain-external-hexagon/Config.in"
+
 # Bootlin toolchains, available for virtually all architectures
 source "toolchain/toolchain-external/toolchain-external-bootlin/Config.in"
 
@@ -122,6 +125,9 @@ source "toolchain/toolchain-external/toolchain-external-linaro-arm/Config.in.opt
 
 # ARM big-endian
 source "toolchain/toolchain-external/toolchain-external-linaro-armeb/Config.in.options"
+
+# Hexagon
+source "toolchain/toolchain-external/toolchain-external-hexagon/Config.in.options"
 
 # MIPS
 source "toolchain/toolchain-external/toolchain-external-codesourcery-mips/Config.in.options"
