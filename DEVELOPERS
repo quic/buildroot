@@ -3503,3 +3503,11 @@ F:	package/quazip/
 F:	package/shapelib/
 F:	package/simple-mail/
 F:	package/tinc/
+
+N:	Brian Cain <brian.cain@oss.qualcomm.com>
+F:	arch/Config.in.hexagon
+F:	board/qcom/
+F:	configs/qcom_sa8775_cdsp0_defconfig
+F:	configs/qcom_dsp_qemu_defconfig
+F:	package/hexagonMVM/
+F:	toolchain/toolchain-external/toolchain-external-hexagon/
