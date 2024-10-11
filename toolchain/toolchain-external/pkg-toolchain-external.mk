@@ -150,7 +150,12 @@ endef
 endif
 
 ifeq ($(BR2_TOOLCHAIN_EXTERNAL_MUSL),y)
+ifeq ($(BR2_hexagon),y)
+LIB_EXTERNAL_LIBS += libc.so libclang_rt.builtins-hexagon.so*
+USR_LIB_EXTERNAL_LIBS += libc++.so* libc++abi.so* libunwind.so*
+else
 TOOLCHAIN_EXTERNAL_LIBS += libc.so
+endif
 endif
 
 ifeq ($(BR2_INSTALL_LIBSTDCPP),y)
@@ -283,7 +288,7 @@ define TOOLCHAIN_EXTERNAL_INSTALL_WRAPPER
 		*-ar|*-ranlib|*-nm) \
 			ln -sf $$(echo $$i | sed 's%^$(HOST_DIR)%..%') .; \
 			;; \
-		*cc|*cc-*|*++|*++-*|*cpp|*-gfortran|*-gdc) \
+		*cc|*cc-*|*++|*++-*|*cpp|*-gfortran|*-gdc|*clang) \
 			ln -sf toolchain-wrapper $$base; \
 			;; \
 		*gdb|*gdbtui) \
@@ -464,6 +469,9 @@ define TOOLCHAIN_EXTERNAL_INSTALL_SYSROOT_LIBS
 		ARCH_SUBDIR=`echo $${ARCH_SYSROOT_DIR} | sed -r -e "s:^$${SYSROOT_DIR_DIRNAME}(.*)/$$:\1:"` ; \
 	else \
 		ARCH_SUBDIR=`echo $${ARCH_SYSROOT_DIR} | sed -r -e "s:^$${SYSROOT_DIR}(.*)/$$:\1:"` ; \
+	fi ; \
+	if test "$(BR2_hexagon)" = "y"; then \
+		SUPPORT_LIB_DIR=$(BR2_TOOLCHAIN_EXTERNAL_PATH)/lib/clang/$(TOOLCHAIN_CLANG_VERSION)/lib/linux ; \
 	fi ; \
 	$(call MESSAGE,"Copying external toolchain sysroot to staging...") ; \
 	$(call copy_toolchain_sysroot,$${SYSROOT_DIR},$${ARCH_SYSROOT_DIR},$${ARCH_SUBDIR},$${ARCH_LIB_DIR},$${SUPPORT_LIB_DIR})
