@@ -170,6 +170,16 @@ LINUX_MAKE_FLAGS = \
 	REGENERATE_PARSERS=1 \
 	DEPMOD=$(HOST_DIR)/sbin/depmod
 
+ifeq ($(BR2_hexagon),y)
+LINUX_MAKE_FLAGS += \
+	AS=$(TARGET_CROSS)clang \
+	CC=$(TARGET_CROSS)clang \
+	LD=$(TARGET_CROSS)ld.lld \
+	LLVM_IAS=1 \
+	LLVM=1 \
+	$()
+endif
+
 ifeq ($(BR2_REPRODUCIBLE),y)
 LINUX_MAKE_ENV += \
 	KBUILD_BUILD_VERSION=1 \
