@@ -43,6 +43,12 @@ endchoice
 config BR2_ARCH
 	default "hexagon"
 
+config BR2_GCC_TARGET_ARCH
+	default "hexagon"
+
+config BR2_NORMALIZED_ARCH
+	default "hexagon"
+
 config BR2_ENDIAN
 	default "LITTLE"
 
