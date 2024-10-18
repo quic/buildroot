@@ -170,6 +170,16 @@ LINUX_MAKE_FLAGS = \
 	REGENERATE_PARSERS=1 \
 	DEPMOD=$(HOST_DIR)/sbin/depmod
 
+ifeq ($(BR2_TOOLCHAIN_EXTERNAL_CLANG),y)
+LINUX_MAKE_FLAGS += LLVM=1
+endif
+
+ifeq ($(BR2_hexagon),y)
+LINUX_MAKE_FLAGS += \
+       LD='hexagon-unknown-linux-musl-ld.lld -m hexagonelf'
+endif
+
+
 ifeq ($(BR2_REPRODUCIBLE),y)
 LINUX_MAKE_ENV += \
 	KBUILD_BUILD_VERSION=1 \
