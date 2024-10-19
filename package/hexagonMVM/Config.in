@@ -1,0 +1,8 @@
+config BR2_PACKAGE_HEXAGONMVM
+	bool "Hexagon MiniVM"
+	depends on BR2_hexagon && BR2_TOOLCHAIN_CLANG_AT_LEAST_19_0
+	help
+	  Hexagon VM implementation.  This virtual machine can be used
+	  to boot linux or other operating systems / programs.
+
+	  https://github.com/quic/hexagonMVM
