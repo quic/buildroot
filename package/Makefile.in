@@ -171,7 +171,9 @@ TARGET_LDFLAGS = $(call qstrip,$(BR2_TARGET_LDFLAGS))
 # "-z" to be passed and the "text" keyword to be dropped otherwise. Both
 # gcc and ld supports that, so it probably won't cause us problems.
 ifeq ($(BR2_TOOLCHAIN_USES_MUSL):$(BR2_STATIC_LIBS),y:)
+ifneq ($(BR2_hexagon),y)
 TARGET_LDFLAGS += -ztext
+endif
 endif
 
 # By design, _FORTIFY_SOURCE requires gcc optimization to be enabled.
