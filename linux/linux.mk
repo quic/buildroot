@@ -173,8 +173,8 @@ LINUX_MAKE_FLAGS = \
 ifeq ($(BR2_hexagon),y)
 LINUX_MAKE_FLAGS += \
 	AS=$(TARGET_CROSS)clang \
-	CC=$(TARGET_CROSS)clang \
-	LD=ld.lld \
+	CC="$(TARGET_CROSS)clang -fno-builtin-bcmp -fno-builtin-stpcpy" \
+	LD="ld.lld -m hexagonelf" \
 	LLVM_IAS=1 \
 	LLVM=1 \
 	$()

@@ -12,6 +12,7 @@ sha256  eec9215fbac649d826fda9d3421da47aebd3c4e69e060e5106d32e309a9b6a1c  linux-
 sha256  fb0edc3c18e47d2b6974cb0880a0afb5c3fa08f50ee87dfdf24349405ea5f8ae  linux-cip-5.10.162-cip24.tar.gz
 sha256  b5539243f187e3d478d76d44ae13aab83952c94b885ad889df6fa9997e16a441  linux-cip-5.10.162-cip24-rt10.tar.gz
 sha256  a97a6fdc814b57b15107139978369d4efd1474142911e8f76b050874cc9ee3e4  linux-bcain_boot_qemu_v6.11-git4.tar.gz
+sha256  dc1541f5065f2c555f9b1050aff4437ee63f849787ad0b631966de9e83330423  linux-bcain-boot-qemu-4.2-01-Nov-2024-git4.tar.gz
 
 # Licenses hashes
 sha256  fb5a425bd3b3cd6071a3a9aff9909a859e7c1158d54d32e07658398cd67eb6a0  COPYING
