@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-HEXAGONMVM_VERSION = 0.1.1
+HEXAGONMVM_VERSION = 0.1.5
 HEXAGONMVM_SOURCE = $(HEXAGONMVM_VERSION).tar.gz
 HEXAGONMVM_SITE = $(call github,quic,hexagonMVM,v$(HEXAGONMVM_VERSION))
 
