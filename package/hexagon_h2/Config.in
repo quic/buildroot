@@ -1,0 +1,6 @@
+config BR2_PACKAGE_HEXAGON_H2
+	bool "Hexagon H2"
+	depends on BR2_hexagon
+	help
+	  Hexagon H2 hipervisor. This virtual machine can be used
+	  to boot linux or other operating systems / programs.

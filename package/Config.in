@@ -529,6 +529,7 @@ endmenu
 	source "package/gvfs/Config.in"
 	source "package/hddtemp/Config.in"
 	source "package/hdparm/Config.in"
+	source "package/hexagon_h2/Config.in"
 	source "package/hwdata/Config.in"
 	source "package/hwloc/Config.in"
 	source "package/i2c-tools/Config.in"
