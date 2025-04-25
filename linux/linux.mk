@@ -176,6 +176,7 @@ endif
 
 ifeq ($(BR2_hexagon),y)
 LINUX_MAKE_FLAGS += \
+       KCFLAGS="-fno-builtin-stpcpy" \
        LD='hexagon-unknown-linux-musl-ld.lld -m hexagonelf'
 endif
 
