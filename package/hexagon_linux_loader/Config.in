@@ -1,0 +1,5 @@
+config BR2_PACKAGE_HEXAGON_LINUX_LOADER
+	bool "Hexagon Linux 4.2 Loader"
+	depends on BR2_hexagon
+	help
+	  Hexagon's binary loader for Linux kernel 4.2.
