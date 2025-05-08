@@ -1,6 +1,7 @@
-# From https://artifacts.codelinaro.org/artifactory/codelinaro-toolchain-for-hexagon/19.1.5/SHA256SUMS:
-sha256 55b41922318f6331590ab7baa7f5dbdd99c109327a9c44a52c5e9878fab148c1  clang+llvm-19.1.5-cross-hexagon-unknown-linux-musl.tar.zst
-sha256 7dd6137d3e6f1516f9b2cf252ef3ca6b5b5b1f24e27423c69d88c32d51d6b483  clang+llvm-19.1.5-cross-hexagon-unknown-linux-musl_aarch64-linux-gnu.tar.zst
-sha256 91795d124c81d27c3829404627a2a06dab0a8683078ac898520d4a81e8853958  clang+llvm-19.1.5-cross-hexagon-unknown-linux-musl_aarch64-windows-gnu.tar.zst
-sha256 f41736f98d6d1d6f03ce6e2b6a032dca9c8d7eba126ca21acce9df7b695c41b0  clang+llvm-19.1.5-cross-hexagon-unknown-linux-musl_x86_64-linux-musl.tar.zst
-sha256 3cacc3cd0e5e531d91a9c70953d6793523c9b954e901a56d02c6b926cbca8690  clang+llvm-19.1.5-cross-hexagon-unknown-linux-musl_x86_64-windows-gnu.tar.zst
+# From https://artifacts.codelinaro.org/artifactory/codelinaro-toolchain-for-hexagon/20.1.4/SHA256SUMS:
+sha256 da7bff0fec48b951a725e383b724333101f2e16c1c626cfdd2a050177621f233  clang+llvm-20.1.4-cross-hexagon-unknown-linux-musl.tar.zst
+sha256 0dca492f5f2ae5ef708200967c7646071dbe134e9592601c8c948a460028fae9  clang+llvm-20.1.4-cross-hexagon-unknown-linux-musl_aarch64-linux-musl.tar.zst
+sha256 ece34f213c56d52aa0015fd2533e8cb58fe5a569f728d4bf043105c5f0d31c41  clang+llvm-20.1.4-cross-hexagon-unknown-linux-musl_aarch64-windows-gnu.tar.zst
+sha256 196bb2eb10bd580aefa0cf34d431c613dd9549fbeb382820ee2ae91c57254e9d  clang+llvm-20.1.4-cross-hexagon-unknown-linux-musl_x86_64-linux-musl.tar.zst
+sha256 3305255c73a709a72f20ce7ec5ec366f7ab1350318572d56365cc0766ef05c1e  clang+llvm-20.1.4-cross-hexagon-unknown-linux-musl_x86_64-windows-gnu.tar.zst
+
