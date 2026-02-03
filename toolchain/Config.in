@@ -36,6 +36,12 @@ config BR2_TOOLCHAIN_USES_MUSL
 	select BR2_TOOLCHAIN_HAS_THREADS_NPTL
 	select BR2_TOOLCHAIN_SUPPORTS_PIE if !BR2_STATIC_LIBS && !BR2_hexagon
 
+config BR2_TOOLCHAIN_USES_GCC
+	bool
+
+config BR2_TOOLCHAIN_USES_CLANG
+	bool
+
 choice
 	prompt "Toolchain type"
 	help
