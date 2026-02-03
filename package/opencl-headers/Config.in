@@ -1,0 +1,6 @@
+config BR2_PACKAGE_OPENCL_HEADERS
+	bool "opencl-headers"
+	help
+	  OpenCL (Open Computing Language) header files from Khronos.
+
+	  https://github.com/KhronosGroup/OpenCL-Headers
