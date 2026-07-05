@@ -1,0 +1,30 @@
+From: Brian Cain <brian.cain@gmail.com>
+Date: Sat, 4 Jul 2026 14:20:00 -0500
+Subject: [PATCH] cli-kex: fix signkey_type pointer type mismatch
+
+recv_msg_kexdh_reply() declares keytype as unsigned int but passes
+its address to buf_get_pub_key(), which expects an
+'enum signkey_type *'. This has always been a type mismatch, but
+older compilers only warned. Clang 21+ treats
+-Wincompatible-pointer-types as an error by default, which breaks
+the build with newer toolchains.
+
+Signed-off-by: Brian Cain <brian.cain@gmail.com>
+---
+ src/cli-kex.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/cli-kex.c b/src/cli-kex.c
+index 1111111..2222222 100644
+--- a/src/cli-kex.c
++++ b/src/cli-kex.c
+@@ -101,7 +101,8 @@
+ void recv_msg_kexdh_reply() {
+
+ 	sign_key *hostkey = NULL;
+-	unsigned int keytype, keybloblen;
++	unsigned int keybloblen;
++	enum signkey_type keytype;
+ 	unsigned char* keyblob = NULL;
+
+ 	TRACE(("enter recv_msg_kexdh_reply"))
