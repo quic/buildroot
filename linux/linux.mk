@@ -175,8 +175,9 @@ LINUX_MAKE_FLAGS += LLVM=1
 endif
 
 ifeq ($(BR2_hexagon),y)
+# LLD automatically detects target from object files, no emulation flag needed
 LINUX_MAKE_FLAGS += \
-       LD='hexagon-unknown-linux-musl-ld.lld -m hexagonelf'
+       LD='hexagon-unknown-linux-musl-ld.lld'
 endif
 
 
