@@ -172,8 +172,17 @@ endif
 
 ifeq ($(BR2_hexagon),y)
 # LLD automatically detects target from object files, no emulation flag needed
+#
+# CC is also forced to the hexagon-prefixed clang: with LLVM=1 alone, the
+# kernel derives CC as plain "clang" and relies on --target=/--prefix= flags
+# (added via KBUILD_CPPFLAGS) to redirect it to the cross toolchain. That
+# works for normal compiles, but arch/hexagon/Makefile probes
+# "$(CC) $(KBUILD_CFLAGS) -print-libgcc-file-name" without KBUILD_CPPFLAGS,
+# so plain "clang" resolves to the host's own clang/libgcc instead of the
+# hexagon one. Pointing CC directly at the cross clang sidesteps that.
 LINUX_MAKE_FLAGS += \
-       LD='hexagon-unknown-linux-musl-ld.lld'
+       LD='hexagon-unknown-linux-musl-ld.lld' \
+       CC='hexagon-unknown-linux-musl-clang'
 endif
 
 
