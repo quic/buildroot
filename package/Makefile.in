@@ -178,6 +178,16 @@ TARGET_LDFLAGS += -ztext
 endif
 endif
 
+# Recent ld.lld versions error out when a linker version script references a
+# symbol that isn't defined in the object(s) being linked (e.g. zlib's
+# configure-time shared-library probe links a tiny test file against a
+# version script covering the whole library API). Older lld / GNU ld just
+# ignored those, so restore that behavior for the hexagon lld toolchain to
+# avoid spurious configure-time failures.
+ifeq ($(BR2_hexagon):$(BR2_TOOLCHAIN_EXTERNAL_CLANG),y:y)
+TARGET_LDFLAGS += -Wl,--undefined-version
+endif
+
 # By design, _FORTIFY_SOURCE requires gcc optimization to be enabled.
 # Therefore, we need to pass _FORTIFY_SOURCE and the optimization level
 # through the same mechanism, i.e currently through CFLAGS. Passing
