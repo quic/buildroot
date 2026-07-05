@@ -1,0 +1,36 @@
+From: Brian Cain <brian.cain@gmail.com>
+Date: Sat, 4 Jul 2026 15:00:00 -0500
+Subject: [PATCH] gallium: fix pipe_transfer usage bitfield width on hexagon
+
+pipe_transfer::usage is declared as a 24-bit bitfield of type
+'enum pipe_map_flags'. On most targets the compiler picks a 4-byte
+underlying type for a plain enum, but the Hexagon ABI picks the
+smallest unsigned integer type that fits all enumerators (here 16
+bits, since the largest enumerator is 1<<14). That makes the 24-bit
+bitfield wider than its own underlying type, which Clang rejects:
+
+  error: width of bit-field 'usage' (24 bits) exceeds the width of
+  its type (16 bits)
+
+Use a plain unsigned bitfield instead, matching the neighboring
+pipe_resource::usage field which already avoids the enum type for
+the same reason.
+
+Signed-off-by: Brian Cain <brian.cain@gmail.com>
+---
+ src/gallium/include/pipe/p_state.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/gallium/include/pipe/p_state.h b/src/gallium/include/pipe/p_state.h
+index 1111111..2222222 100644
+--- a/src/gallium/include/pipe/p_state.h
++++ b/src/gallium/include/pipe/p_state.h
+@@ -619,7 +619,7 @@
+ struct pipe_transfer
+ {
+    struct pipe_resource *resource; /**< resource to transfer to/from  */
+-   enum pipe_map_flags usage:24;
++   unsigned usage:24;              /**< PIPE_MAP_x bitmask */
+    unsigned level:8;               /**< texture mipmap level */
+    struct pipe_box box;            /**< region of the resource to access */
+    unsigned stride;                /**< row stride in bytes */
