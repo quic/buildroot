@@ -1,0 +1,36 @@
+From: Brian Cain <brian.cain@gmail.com>
+Date: Sat, 4 Jul 2026 15:20:00 -0500
+Subject: [PATCH] gallium: fix tgsi_opcode_info opcode bitfield width on
+ hexagon
+
+Same class of issue as the pipe_transfer::usage fix: 'enum tgsi_opcode'
+currently fits in 8 bits on every enumerator, so the Hexagon ABI (which
+picks the smallest unsigned integer type that fits all enumerators for
+a plain enum) uses an 8-bit underlying type for it. The 10-bit
+'opcode' bitfield is then wider than its own declared type, which
+Clang rejects:
+
+  error: width of bit-field 'opcode' (10 bits) exceeds the width of
+  its type (8 bits)
+
+Use a plain unsigned bitfield instead, as already done for the
+neighboring fields in this struct.
+
+Signed-off-by: Brian Cain <brian.cain@gmail.com>
+---
+ src/gallium/auxiliary/tgsi/tgsi_info.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/gallium/auxiliary/tgsi/tgsi_info.h b/src/gallium/auxiliary/tgsi/tgsi_info.h
+index 1111111..2222222 100644
+--- a/src/gallium/auxiliary/tgsi/tgsi_info.h
++++ b/src/gallium/auxiliary/tgsi/tgsi_info.h
+@@ -80,7 +80,7 @@
+    unsigned pre_dedent:1;
+    unsigned post_indent:1;
+    enum tgsi_output_mode output_mode:4;
+-   enum tgsi_opcode opcode:10;
++   unsigned opcode:10;              /**< TGSI_OPCODE_x */
+ };
+
+ const struct tgsi_opcode_info *
