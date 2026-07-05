@@ -1,0 +1,5 @@
+# QEMU's "virt" hexagon machine registers the PL011 UART as ttyAMA1 (not
+# ttyAMA0, as the kernel's own qemu_defconfig / embedded sm8150 DTS assume),
+# so override the console= kernel argument to match reality; otherwise the
+# kernel never attaches an initial console and userspace never gets a tty.
+CONFIG_CMDLINE="console=ttyAMA1 debug mem=892M lpj=89124080 rdinit=/sbin/init"
