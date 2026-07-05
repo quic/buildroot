@@ -25,11 +25,17 @@ LIBZLIB_PIC = -fPIC
 LIBZLIB_SHARED = --shared
 endif
 
+# zlib's ./configure builds its "does the toolchain support a shared
+# library" probe from $CFLAGS alone (as $SFLAGS); it never looks at
+# $LDFLAGS. Fold TARGET_LDFLAGS into CFLAGS here so that flags such as
+# hexagon's "-Wl,--undefined-version" reach that probe, or configure
+# silently falls back to a static-only build.
 define LIBZLIB_CONFIGURE_CMDS
 	(cd $(@D); rm -rf config.cache; \
 		$(TARGET_CONFIGURE_ARGS) \
 		$(TARGET_CONFIGURE_OPTS) \
-		CFLAGS="$(TARGET_CFLAGS) $(LIBZLIB_PIC)" \
+		CFLAGS="$(TARGET_CFLAGS) $(LIBZLIB_PIC) $(TARGET_LDFLAGS)" \
+		LDFLAGS="$(TARGET_LDFLAGS)" \
 		./configure \
 		$(LIBZLIB_SHARED) \
 		--prefix=/usr \
