@@ -10,6 +10,9 @@ BR2_TOOLCHAIN_EXTERNAL_REL_BIN_PATH="x86_64-linux-gnu/bin"
 BR2_TOOLCHAIN_EXTERNAL_CUSTOM_PREFIX="hexagon-unknown-linux-musl"
 BR2_TOOLCHAIN_EXTERNAL_CLANG_21_0=y
 BR2_TOOLCHAIN_EXTERNAL_GCC_12=y
+# ld.lld is newer/less-tested for hexagon than ld.eld; use the eld linker for
+# target links (clang otherwise defaults to ld.lld for this toolchain).
+BR2_TARGET_LDFLAGS="-fuse-ld=eld"
 BR2_TOOLCHAIN_EXTERNAL_HEADERS_6_13=y
 BR2_TOOLCHAIN_EXTERNAL_CUSTOM_MUSL=y
 BR2_TOOLCHAIN_EXTERNAL_CXX=y
