@@ -59,7 +59,16 @@ BR2_PACKAGE_MESA3D_OPENGL_ES=y
 BR2_PACKAGE_VULKAN_LOADER=y
 BR2_PACKAGE_VULKAN_TOOLS=y
 BR2_TARGET_ROOTFS_TAR_GZIP=y
-BR2_TARGET_ROOTFS_INITRAMFS=y
+# The full rootfs is no longer embedded into the kernel as an initramfs.
+# Instead it is written to a persistent ext2 disk image that QEMU exposes as
+# a virtio-blk device (/dev/vda); a tiny external initrd (assembled in
+# build-buildroot.sh) switch_roots into it at boot. ext2 -- not ext4 -- is
+# required: the kernel's qemu defconfig has CONFIG_EXT2_FS but not
+# CONFIG_EXT4_FS. The size is padded well above the ~60MB rootfs so there is
+# headroom for changes that persist across reboots.
+BR2_TARGET_ROOTFS_EXT2=y
+BR2_TARGET_ROOTFS_EXT2_2r1=y
+BR2_TARGET_ROOTFS_EXT2_SIZE="1G"
 
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_GIT=y

@@ -1,5 +1,16 @@
+# Do NOT embed the buildroot rootfs into the kernel. The rootfs now lives on
+# a persistent virtio-blk disk (/dev/vda, ext2) and is reached via a small
+# external initrd passed to QEMU with -initrd; keep CONFIG_INITRAMFS_SOURCE
+# empty so no rootfs is baked into vmlinux (BR2_TARGET_ROOTFS_INITRAMFS, which
+# used to set this, is no longer selected -- this guards against the base
+# defconfig ever reintroducing it).
+CONFIG_INITRAMFS_SOURCE=""
+
 # QEMU's "virt" hexagon machine registers the PL011 UART as ttyAMA1 (not
 # ttyAMA0, as the kernel's own qemu_defconfig / embedded sm8150 DTS assume),
 # so override the console= kernel argument to match reality; otherwise the
 # kernel never attaches an initial console and userspace never gets a tty.
-CONFIG_CMDLINE="console=ttyAMA1 debug mem=892M lpj=89124080 rdinit=/sbin/init"
+#
+# rdinit=/init runs the external initrd's /init (board/qcom/sa8775/initrd-init.sh),
+# which mounts /dev/vda and switch_roots into the real /sbin/init on the disk.
+CONFIG_CMDLINE="console=ttyAMA1 debug mem=892M lpj=89124080 rdinit=/init"
