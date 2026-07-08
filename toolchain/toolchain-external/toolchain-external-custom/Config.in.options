@@ -58,10 +58,16 @@ endchoice
 
 choice
 	bool "External toolchain gcc version"
-	depends on BR2_TOOLCHAIN_EXTERNAL_GCC
+	depends on BR2_TOOLCHAIN_EXTERNAL_GCC || BR2_TOOLCHAIN_EXTERNAL_CLANG
 	help
 	  Set to the gcc version that is used by your external
 	  toolchain.
+
+	  For a clang toolchain (which has no gcc version of its own),
+	  select the version whose C++ standard-library feature level the
+	  toolchain matches. This only gates packages that use it as a
+	  C++-capability proxy (e.g. llvm, mesa3d); it does not change the
+	  compiler, which stays clang.
 
 config BR2_TOOLCHAIN_EXTERNAL_GCC_15
 	bool "15.x"
