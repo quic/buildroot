@@ -248,9 +248,13 @@ endif
 
 # gcc-4.7 and later ships with wrappers that will automatically pass
 # arguments to the binutils tools. Those are paths to necessary linker
-# plugins.
+# plugins. These wrappers (gcc-ar, gcc-nm, gcc-ranlib) only exist for a
+# gcc toolchain; a clang toolchain that declares a gcc-equivalent version
+# uses the plain ar/nm/ranlib (or llvm-* aliases) instead.
 ifeq ($(BR2_TOOLCHAIN_GCC_AT_LEAST_4_7),y)
+ifneq ($(BR2_TOOLCHAIN_EXTERNAL_CLANG),y)
 TARGET_GCC_WRAPPERS_PREFIX = gcc-
+endif
 endif
 
 ifeq ($(BR2_TOOLCHAIN_EXTERNAL_CLANG),y)
