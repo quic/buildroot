@@ -61,9 +61,9 @@ BR2_PACKAGE_VULKAN_TOOLS=y
 BR2_TARGET_ROOTFS_TAR_GZIP=y
 # The full rootfs is no longer embedded into the kernel as an initramfs.
 # Instead it is written to a persistent ext2 disk image that QEMU exposes as
-# a virtio-blk device (/dev/vda); a tiny external initrd (assembled in
-# build-buildroot.sh) switch_roots into it at boot. ext2 -- not ext4 -- is
-# required: the kernel's qemu defconfig has CONFIG_EXT2_FS but not
+# a virtio-blk device (/dev/vda), mounted directly as root via root=/dev/vda
+# (board/qcom/sa8775/linux.fragment) -- no initrd needed. ext2 -- not ext4 --
+# is required: the kernel's qemu defconfig has CONFIG_EXT2_FS but not
 # CONFIG_EXT4_FS. The size is padded well above the ~60MB rootfs so there is
 # headroom for changes that persist across reboots.
 BR2_TARGET_ROOTFS_EXT2=y

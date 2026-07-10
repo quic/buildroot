@@ -1,8 +1,8 @@
 # Do NOT embed the buildroot rootfs into the kernel. The rootfs now lives on
-# a persistent virtio-blk disk (/dev/vda, ext2) and is reached via a small
-# external initrd passed to QEMU with -initrd; keep CONFIG_INITRAMFS_SOURCE
-# empty so no rootfs is baked into vmlinux (BR2_TARGET_ROOTFS_INITRAMFS, which
-# used to set this, is no longer selected -- this guards against the base
+# a persistent virtio-blk disk (/dev/vda, ext2), mounted directly as root via
+# root=/dev/vda below -- no initrd needed. Keep CONFIG_INITRAMFS_SOURCE empty
+# so no rootfs is baked into vmlinux (BR2_TARGET_ROOTFS_INITRAMFS, which used
+# to set this, is no longer selected -- this guards against the base
 # defconfig ever reintroducing it).
 CONFIG_INITRAMFS_SOURCE=""
 
@@ -11,6 +11,7 @@ CONFIG_INITRAMFS_SOURCE=""
 # so override the console= kernel argument to match reality; otherwise the
 # kernel never attaches an initial console and userspace never gets a tty.
 #
-# rdinit=/init runs the external initrd's /init (board/qcom/sa8775/initrd-init.sh),
-# which mounts /dev/vda and switch_roots into the real /sbin/init on the disk.
-CONFIG_CMDLINE="console=ttyAMA1 debug mem=892M lpj=89124080 rdinit=/init"
+# root=/dev/vda mounts the persistent virtio-blk ext2 disk directly as root;
+# rootwait blocks boot until the virtio-blk driver probes the device instead
+# of panicking with "VFS: Unable to mount root fs".
+CONFIG_CMDLINE="console=ttyAMA1 debug mem=892M lpj=89124080 root=/dev/vda rw rootwait"
