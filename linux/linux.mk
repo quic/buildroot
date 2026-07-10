@@ -200,7 +200,9 @@ endif
 # abusing those aliases for system call entry points, in order to
 # sanitize the arguments passed from user space in registers.
 # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=82435
-ifeq ($(BR2_TOOLCHAIN_GCC_AT_LEAST_8),y)
+ifeq ($(BR2_TOOLCHAIN_EXTERNAL_CLANG),y)
+# Clang doesn't recognize this gcc-specific warning flag.
+else ifeq ($(BR2_TOOLCHAIN_GCC_AT_LEAST_8),y)
 LINUX_CFLAGS += -Wno-attribute-alias
 endif
 
