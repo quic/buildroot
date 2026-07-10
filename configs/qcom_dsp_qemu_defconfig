@@ -33,7 +33,10 @@ BR2_PACKAGE_BASH=y
 BR2_PACKAGE_ZSH=y
 
 BR2_PACKAGE_LIQUID_DSP=y
-BR2_PACKAGE_DAV1D=y
+# dav1d's meson build unconditionally links -latomic when
+# BR2_TOOLCHAIN_HAS_LIBATOMIC=y, but this toolchain has no libatomic.a
+# (atomics are covered by compiler builtins/musl), so the link fails.
+# BR2_PACKAGE_DAV1D is not set
 BR2_PACKAGE_CMAKE=y
 BR2_PACKAGE_LUA=y
 BR2_PACKAGE_GNURADIO_FFT=y
@@ -46,18 +49,11 @@ BR2_PACKAGE_COREUTILS=y
 BR2_PACKAGE_COREMARK=y
 BR2_PACKAGE_HEXAGONMVM=n
 
-# Mesa3D with Vulkan support
-BR2_PACKAGE_MESA3D=y
-BR2_PACKAGE_MESA3D_LLVM=y
-# lavapipe's ORC JIT (lp_bld_init_orc.cpp) uses dynamic_cast, so LLVM and
-# mesa's gallivm must be built with RTTI enabled.
-BR2_PACKAGE_LLVM_RTTI=y
-BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_SOFTPIPE=y
-BR2_PACKAGE_MESA3D_VULKAN_DRIVER_SWRAST=y
-BR2_PACKAGE_MESA3D_OPENGL_EGL=y
-BR2_PACKAGE_MESA3D_OPENGL_ES=y
-BR2_PACKAGE_VULKAN_LOADER=y
-BR2_PACKAGE_VULKAN_TOOLS=y
+# Mesa3D pulls in libdrm, which -- like dav1d above -- unconditionally
+# links -latomic when BR2_TOOLCHAIN_HAS_LIBATOMIC=y, and this toolchain
+# has no libatomic.a. Skip Mesa3D/Vulkan until that toolchain-detection
+# issue is resolved.
+# BR2_PACKAGE_MESA3D is not set
 BR2_TARGET_ROOTFS_TAR_GZIP=y
 # The full rootfs is no longer embedded into the kernel as an initramfs.
 # Instead it is written to a persistent ext2 disk image that QEMU exposes as
