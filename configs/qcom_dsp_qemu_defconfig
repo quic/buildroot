@@ -69,6 +69,9 @@ BR2_TARGET_ROOTFS_TAR_GZIP=y
 BR2_TARGET_ROOTFS_EXT2=y
 BR2_TARGET_ROOTFS_EXT2_2r1=y
 BR2_TARGET_ROOTFS_EXT2_SIZE="1G"
+# Also emit a gzip-compressed copy (rootfs.ext2.gz) alongside the
+# uncompressed image, for smaller distribution/storage.
+BR2_TARGET_ROOTFS_EXT2_GZIP=y
 
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_GIT=y
