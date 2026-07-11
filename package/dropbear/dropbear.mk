@@ -17,6 +17,9 @@ DROPBEAR_CPE_ID_PRODUCT = dropbear_ssh
 # Disable hardening flags added by dropbear configure.ac, and let
 # Buildroot add them when the relevant options are enabled. This
 # prevents dropbear from using SSP support when not available.
+# Workaround hexagon clang 22.1.8 miscompile:
+#     https://github.com/llvm/llvm-project/issues/208943
+DROPBEAR_CONF_ENV = LTM_CFLAGS="-O1"
 DROPBEAR_CONF_OPTS = --disable-harden
 
 ifeq ($(BR2_PACKAGE_DROPBEAR_CLIENT),y)
