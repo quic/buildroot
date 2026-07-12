@@ -1,0 +1,48 @@
+From: Hexagon toolchain buildroot
+Date: Sat, 12 Jul 2026 00:00:00 -0500
+Subject: [PATCH] ir/comp: tolerate uncomputable field layouts
+
+Some C++ template types (notably libc++'s std::aligned_union) have a layout
+that depends on a non-type (value) template parameter. bindgen keeps a
+reference to that parameter as a Var item, but discards the Var itself when it
+is not otherwise reachable, so computing the type's layout during the
+pre-codegen analysis panics with "Not an item" deep inside
+BindgenContext::resolve_item.
+
+This bites the mesa RustiCL LLVM bindings when cross-compiling for the 32-bit
+hexagon target: the LLVM/SPIRV headers pull in std::aligned_union transitively,
+and generation aborts entirely.
+
+Wrap the per-field layout computation in catch_unwind so an uncomputable field
+layout is treated as "unknown" (the same as fields whose layout is None) rather
+than aborting all binding generation. The affected types are opaque anyway, so
+an approximate/omitted contribution to the opaque blob's size is acceptable.
+
+Signed-off-by: Hexagon toolchain buildroot
+--- a/bindgen/ir/comp.rs
++++ b/bindgen/ir/comp.rs
+@@ -1165,7 +1165,13 @@
+             CompFields::Error => {}
+             CompFields::After { ref fields, .. } => {
+                 for field in fields {
+-                    if let Some(layout) = field.layout(ctx) {
++                    // Some template types (e.g. libc++ std::aligned_union) have
++                    // a layout that depends on non-type template parameters which
++                    // bindgen discards; computing it panics deep in resolve_item.
++                    // Treat such fields as unknown-layout instead of aborting all
++                    // codegen (the affected types are opaque anyway).
++                    let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| field.layout(ctx)));
++                    if let Ok(Some(layout)) = r {
+                         callback(layout);
+                     }
+                 }
+@@ -1173,7 +1179,8 @@
+             CompFields::Before(ref raw_fields) => {
+                 for field in raw_fields {
+                     let field_ty = ctx.resolve_type(field.0.ty);
+-                    if let Some(layout) = field_ty.layout(ctx) {
++                    let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| field_ty.layout(ctx)));
++                    if let Ok(Some(layout)) = r {
+                         callback(layout);
+                     }
+                 }
