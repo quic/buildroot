@@ -71,9 +71,44 @@ MESA3D_CONF_OPTS += \
 	-Drust_std=2021 \
 	-Dmesa-clc-bundle-headers=enabled
 
+# Clang external toolchains expose "<tuple>-clang" but no "<tuple>-gcc",
+# so rustc must invoke clang as the linker driver.
+ifeq ($(BR2_TOOLCHAIN_EXTERNAL_CLANG),y)
+MESA3D_RUST_LD = $(TARGET_CROSS)clang
+else
+MESA3D_RUST_LD = $(TARGET_CROSS)gcc
+endif
+
+# On hexagon, pin rustc's target CPU to the configured Hexagon version so
+# RustiCL matches the rest of the target (BR2_GCC_TARGET_CPU, e.g.
+# hexagonv73). Other arches use rustc's default target CPU.
+ifeq ($(BR2_hexagon),y)
+MESA3D_RUSTC_TARGET_CPU = ,'-Ctarget-cpu=$(BR2_GCC_TARGET_CPU)'
+endif
+
 MESA3D_MESON_EXTRA_BINARIES += \
-	rust=['$(HOST_DIR)/bin/rustc','--target=$(RUSTC_TARGET_NAME)'] \
-	rust_ld='$(TARGET_CROSS)gcc'
+	rust=['$(HOST_DIR)/bin/rustc','--target=$(RUSTC_TARGET_NAME)'$(MESA3D_RUSTC_TARGET_CPU)] \
+	rust_ld='$(MESA3D_RUST_LD)'
+
+# Hexagon defaults to -fshort-enums (1-byte enums where they fit). RustiCL's
+# hand-written Rust and its generated bindings assume int-sized enums, so a
+# short-enum ABI makes the Rust code fail to build (u8 vs u32 mismatches, and
+# flag enums like pipe_map_flags that do not fit a byte). Build mesa's C/C++
+# and its bindgen bindings with -fno-short-enums for a consistent int-enum ABI.
+ifeq ($(BR2_hexagon),y)
+MESA3D_CFLAGS = $(TARGET_CFLAGS) -fno-short-enums
+MESA3D_CXXFLAGS = $(TARGET_CXXFLAGS) -fno-short-enums
+MESA3D_BINDGEN_ENUM_ARG = -fno-short-enums
+endif
+
+# RustiCL's rust bindings are produced by bindgen, which parses the target C/C++
+# headers through libclang. Meson does not pass the cross target triple to
+# bindgen, so libclang defaults to the host (64-bit) target and mis-sizes
+# pointers on 32-bit targets (e.g. hexagon: sizeof(void*)==8 vs 4), failing the
+# LLVM/libc++ header parse. bindgen appends BINDGEN_EXTRA_CLANG_ARGS to its
+# libclang invocation, so pass the real target, CPU and enum ABI there.
+MESA3D_NINJA_ENV += \
+	BINDGEN_EXTRA_CLANG_ARGS="--target=$(RUSTC_TARGET_NAME) -mcpu=$(GCC_TARGET_CPU) $(MESA3D_BINDGEN_ENUM_ARG)"
 
 else
 MESA3D_CONF_OPTS += -Dgallium-rusticl=false

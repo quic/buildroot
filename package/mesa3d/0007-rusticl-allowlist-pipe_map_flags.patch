@@ -1,0 +1,25 @@
+From: Hexagon toolchain buildroot
+Date: Sat, 12 Jul 2026 00:00:00 -0500
+Subject: [PATCH] rusticl: explicitly allowlist the pipe_map_flags enum for bindgen
+
+RustiCL's meson bindgen arguments mark pipe_map_flags as a --bitfield-enum but,
+unlike every other gallium enum used from Rust (pipe_endian, pipe_query_type,
+pipe_resource_usage, ...), never pass --allowlist-type for it. It is therefore
+only emitted when bindgen happens to reach it transitively from another
+allowlisted declaration. On some targets (e.g. hexagon) it is not reached, so
+the generated bindings lack the pipe_map_flags newtype and RustiCL fails to
+build with "cannot find module or crate pipe_map_flags".
+
+Allowlist the type explicitly, matching the other gallium enums.
+
+Signed-off-by: Hexagon toolchain buildroot
+--- a/src/gallium/frontends/rusticl/meson.build
++++ b/src/gallium/frontends/rusticl/meson.build
+@@ -315,6 +315,7 @@
+     '--allowlist-function',     'pipe_.*',
+     '--allowlist-var',          'PIPE_.*',
+     '--allowlist-type',         'pipe_endian',
++    '--allowlist-type',         'pipe_map_flags',
+     '--bitfield-enum',          'pipe_map_flags',
+     '--allowlist-type',         'pipe_query_type',
+     '--constified-enum-module', 'pipe_query_type',
