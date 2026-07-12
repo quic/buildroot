@@ -35,7 +35,10 @@ BR2_PACKAGE_LSH=y
 BR2_PACKAGE_BASH=y
 BR2_PACKAGE_ZSH=y
 
-BR2_PACKAGE_LIQUID_DSP=y
+# liquid-dsp's src/math/src/poly.c triggers a clang-23 hexagon compile-time
+# blowup at -O2 (compiles in ~0.3s at -O0, does not terminate at -O2). Disabled
+# to unblock the Mesa3D work; reproducer preserved in ./compile_time_bug_poly_c.
+# BR2_PACKAGE_LIQUID_DSP is not set
 # dav1d's meson build unconditionally links -latomic when
 # BR2_TOOLCHAIN_HAS_LIBATOMIC=y, but this toolchain has no libatomic.a
 # (atomics are covered by compiler builtins/musl), so the link fails.
