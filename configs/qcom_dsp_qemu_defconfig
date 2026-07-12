@@ -64,6 +64,20 @@ BR2_PACKAGE_MESA3D=y
 BR2_PACKAGE_MESA3D_LLVM=y
 BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_LLVMPIPE=y
 BR2_PACKAGE_MESA3D_VULKAN_DRIVER_SWRAST=y
+# OpenCL via Mesa's RustiCL backend. RustiCL is written in Rust, so it
+# needs the Rust compiler to support the hexagon *target*. Hexagon is a
+# Rust Tier 3 platform (hexagon-unknown-linux-musl), which ships no
+# prebuilt rust-std -- so we must build the compiler and std from source
+# (BR2_PACKAGE_HOST_RUST) rather than use the prebuilt host-rust-bin.
+# Support for the target was added in package/rustc/Config.in.host and
+# package/rust/rust.mk (llvm-libunwind=in-tree, clang as target cc).
+BR2_PACKAGE_HOST_RUST=y
+BR2_PACKAGE_MESA3D_OPENCL=y
+BR2_PACKAGE_MESA3D_RUSTICL=y
+# clinfo enumerates the OpenCL platform/devices; handy for verifying RustiCL.
+# RustiCL exposes no devices unless RUSTICL_ENABLE names a driver at runtime,
+# e.g. `RUSTICL_ENABLE=llvmpipe clinfo`.
+BR2_PACKAGE_CLINFO=y
 BR2_TARGET_ROOTFS_TAR_GZIP=y
 # The full rootfs is no longer embedded into the kernel as an initramfs.
 # Instead it is written to a persistent ext2 disk image that QEMU exposes as
