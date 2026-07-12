@@ -1001,6 +1001,11 @@ config BR2_TOOLCHAIN_HAS_SYNC_8
 config BR2_TOOLCHAIN_HAS_LIBATOMIC
 	bool
 	default y if BR2_TOOLCHAIN_GCC_AT_LEAST_4_8
+	# A separate libatomic.a is a GCC concept. Clang toolchains cover the
+	# __atomic intrinsics with compiler builtins / compiler-rt and the C
+	# library, and do not ship a libatomic to link against -- so passing
+	# -latomic (as many packages do when this symbol is y) fails to link.
+	depends on !BR2_TOOLCHAIN_EXTERNAL_CLANG
 	depends on BR2_TOOLCHAIN_HAS_THREADS
 	depends on BR2_BINFMT_ELF || \
 		(BR2_BINFMT_FLAT && BR2_arm && \
@@ -1023,6 +1028,10 @@ config BR2_TOOLCHAIN_HAS_LIBATOMIC
 config BR2_TOOLCHAIN_HAS_ATOMIC
 	bool
 	default y if BR2_TOOLCHAIN_HAS_LIBATOMIC
+	# Clang provides the __atomic intrinsics through compiler builtins /
+	# compiler-rt, so atomics are available even though there is no
+	# separate libatomic (see BR2_TOOLCHAIN_HAS_LIBATOMIC above).
+	default y if BR2_TOOLCHAIN_EXTERNAL_CLANG && BR2_TOOLCHAIN_HAS_THREADS
 	default y if BR2_TOOLCHAIN_GCC_AT_LEAST_4_7 && BR2_arm
 	default y if BR2_TOOLCHAIN_GCC_AT_LEAST_4_7 && BR2_armeb
 	default y if BR2_TOOLCHAIN_GCC_AT_LEAST_4_7 && BR2_xtensa
