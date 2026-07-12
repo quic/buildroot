@@ -15,8 +15,14 @@ HOST_RUST_BIN_PROVIDES = host-rustc
 
 HOST_RUST_BIN_SOURCE = rust-$(RUST_BIN_VERSION)-$(RUSTC_HOST_NAME).tar.xz
 
+# Tier 3 targets (e.g. hexagon-unknown-linux-musl) ship no prebuilt
+# rust-std, so there is nothing to download -- host-rust builds the target
+# std from source and only uses host-rust-bin as the bootstrap compiler.
+# Attempting the download would 404. Tier 1/2 targets do have prebuilt std.
+ifneq ($(BR2_PACKAGE_HOST_RUSTC_TARGET_TIER3_PLATFORMS),y)
 ifeq ($(BR2_PACKAGE_HOST_RUSTC_TARGET_ARCH_SUPPORTS),y)
 HOST_RUST_BIN_EXTRA_DOWNLOADS += rust-std-$(RUST_BIN_VERSION)-$(RUSTC_TARGET_NAME).tar.xz
+endif
 endif
 
 HOST_RUST_BIN_LIBSTD_HOST_PREFIX = rust-std-$(RUSTC_HOST_NAME)
@@ -47,11 +53,15 @@ define HOST_RUST_BIN_INSTALL_RUSTC
 		./install.sh $(HOST_RUST_BIN_INSTALL_OPTS))
 endef
 
+# See the EXTRA_DOWNLOADS note above: no prebuilt target std exists for
+# Tier 3 targets, so there is nothing to install here for them.
+ifneq ($(BR2_PACKAGE_HOST_RUSTC_TARGET_TIER3_PLATFORMS),y)
 ifeq ($(BR2_PACKAGE_HOST_RUSTC_TARGET_ARCH_SUPPORTS),y)
 define HOST_RUST_BIN_INSTALL_LIBSTD_TARGET
 	(cd $(@D)/std/rust-std-$(RUST_BIN_VERSION)-$(RUSTC_TARGET_NAME); \
 		./install.sh $(HOST_RUST_BIN_INSTALL_COMMON_OPTS))
 endef
+endif
 endif
 
 define HOST_RUST_BIN_INSTALL_CMDS

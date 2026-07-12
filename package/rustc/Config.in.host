@@ -100,6 +100,17 @@ config BR2_PACKAGE_HOST_RUSTC_TARGET_TIER2_PLATFORMS
 	# sparc64-unknown-linux-gnu
 	default y if BR2_sparc64 && BR2_TOOLCHAIN_USES_GLIBC
 
+# The below entries match Tier 3 platforms as described at
+# https://doc.rust-lang.org/nightly/rustc/platform-support.html.
+# Tier 3 targets ship no pre-built rust-std, so they require host-rust
+# (built from source) to compile libstd on the fly. When adding new
+# entries below, update RUST_TARGETS in utils/update-rust.
+config BR2_PACKAGE_HOST_RUSTC_TARGET_TIER3_PLATFORMS
+	bool
+	# hexagon-unknown-linux-musl
+	# https://doc.rust-lang.org/rustc/platform-support/hexagon-unknown-linux-musl.html
+	default y if BR2_hexagon && BR2_TOOLCHAIN_USES_MUSL
+
 # All target rust packages should depend on this option
 # Note: With musl based toolchain, we need a C++ cross compiler to
 # build host-rust some target libraries (libunwind) from llvm source
@@ -109,6 +120,7 @@ config BR2_PACKAGE_HOST_RUSTC_TARGET_ARCH_SUPPORTS
 	default y if BR2_PACKAGE_HOST_RUSTC_TARGET_TIER1_PLATFORMS
 	default y if BR2_PACKAGE_HOST_RUSTC_TARGET_TIER2_HOST_TOOLS_PLATFORMS
 	default y if BR2_PACKAGE_HOST_RUSTC_TARGET_TIER2_PLATFORMS
+	default y if BR2_PACKAGE_HOST_RUSTC_TARGET_TIER3_PLATFORMS
 	depends on BR2_INSTALL_LIBSTDCPP || !BR2_TOOLCHAIN_USES_MUSL
 	depends on BR2_PACKAGE_HOST_RUSTC_ARCH_SUPPORTS
 
