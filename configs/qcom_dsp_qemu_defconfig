@@ -55,11 +55,15 @@ BR2_PACKAGE_COREUTILS=y
 BR2_PACKAGE_COREMARK=y
 BR2_PACKAGE_HEXAGONMVM=n
 
-# Mesa3D pulls in libdrm, which -- like dav1d above -- unconditionally
-# links -latomic when BR2_TOOLCHAIN_HAS_LIBATOMIC=y, and this toolchain
-# has no libatomic.a. Skip Mesa3D/Vulkan until that toolchain-detection
-# issue is resolved.
-# BR2_PACKAGE_MESA3D is not set
+# Mesa3D with a software renderer (no GPU on the QEMU target): the llvmpipe
+# gallium driver provides OpenGL and the swrast (lavapipe) driver provides
+# Vulkan, both via the target-side LLVM. The earlier -latomic link failure
+# from libdrm is resolved now that BR2_TOOLCHAIN_HAS_LIBATOMIC is no longer
+# set for this clang toolchain (see toolchain/Config.in).
+BR2_PACKAGE_MESA3D=y
+BR2_PACKAGE_MESA3D_LLVM=y
+BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_LLVMPIPE=y
+BR2_PACKAGE_MESA3D_VULKAN_DRIVER_SWRAST=y
 BR2_TARGET_ROOTFS_TAR_GZIP=y
 # The full rootfs is no longer embedded into the kernel as an initramfs.
 # Instead it is written to a persistent ext2 disk image that QEMU exposes as
