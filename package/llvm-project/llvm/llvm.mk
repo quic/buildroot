@@ -107,6 +107,20 @@ LLVM_CONF_OPTS += -DLLVM_LINK_LLVM_DYLIB=ON
 
 LLVM_CONF_OPTS += -DCMAKE_CROSSCOMPILING=1
 
+# The Hexagon clang-23 cross compiler hits a compile-time blowup
+# (effectively non-terminating; observed at 745+ min of CPU on a single
+# translation unit) when unrolling loops in some heavy LLVM sources such as
+# lib/Support/APFloat.cpp. Disabling loop unrolling keeps the rest of -O2 and
+# reduces those TUs from non-terminating to a few seconds. -O2 lives in
+# CMAKE_CXX_FLAGS (BR2_OPTIMIZE_2); appending -fno-unroll-loops via the
+# _RELEASE flags places it after -O2 so it wins. See the reproducer at
+# support/../compile_time_bug_apfloat_cpp (in the toolchain tree).
+ifeq ($(BR2_hexagon),y)
+LLVM_CONF_OPTS += \
+	-DCMAKE_C_FLAGS_RELEASE="-DNDEBUG -fno-unroll-loops" \
+	-DCMAKE_CXX_FLAGS_RELEASE="-DNDEBUG -fno-unroll-loops"
+endif
+
 # Disabled for the host since no host-libedit.
 # Fall back to "Simple fgets-based implementation" of llvm line editor.
 HOST_LLVM_CONF_OPTS += -DLLVM_ENABLE_LIBEDIT=OFF
