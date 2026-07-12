@@ -500,6 +500,24 @@ define TOOLCHAIN_EXTERNAL_INSTALL_SYSROOT_LIBS
 	$(call copy_toolchain_sysroot,$${SYSROOT_DIR},$${ARCH_SYSROOT_DIR},$${ARCH_SUBDIR},$${ARCH_LIB_DIR},$${SUPPORT_LIB_DIR})
 endef
 
+# The hexagon clang toolchain ships its compiler-rt / builtins libraries
+# (usr/lib/libclang_rt.*-hexagon.a in the sysroot) as relative symlinks into
+# the clang resource directory (lib/clang/<ver>), which lives *outside* the
+# sysroot. Once the sysroot is copied into staging, those symlinks resolve to
+# $(HOST_DIR)/lib/clang/<ver>. Mirror the toolchain's resource directory there
+# so that e.g. -lclang_rt.builtins-hexagon stays resolvable when packages link
+# through the buildroot-wrapped compiler (which redirects --sysroot to staging).
+ifeq ($(BR2_TOOLCHAIN_EXTERNAL_CLANG)$(BR2_hexagon),yy)
+define TOOLCHAIN_EXTERNAL_INSTALL_CLANG_RUNTIME
+	$(Q)RESOURCE_DIR=`$(TOOLCHAIN_EXTERNAL_CC) -print-resource-dir` ; \
+	if test -d "$${RESOURCE_DIR}" ; then \
+		$(call MESSAGE,"Mirroring clang resource directory to host...") ; \
+		mkdir -p $(HOST_DIR)/lib/clang ; \
+		ln -snf "$${RESOURCE_DIR}" $(HOST_DIR)/lib/clang/`basename $${RESOURCE_DIR}` ; \
+	fi
+endef
+endif
+
 # Create a symlink from (usr/)$(ARCH_LIB_DIR) to lib.
 # Note: the skeleton package additionally creates lib32->lib or lib64->lib
 # (as appropriate)
@@ -651,6 +669,7 @@ define $(2)_INSTALL_STAGING_CMDS
 	$$(TOOLCHAIN_WRAPPER_INSTALL)
 	$$(TOOLCHAIN_EXTERNAL_CREATE_STAGING_LIB_SYMLINK)
 	$$(TOOLCHAIN_EXTERNAL_INSTALL_SYSROOT_LIBS)
+	$$(TOOLCHAIN_EXTERNAL_INSTALL_CLANG_RUNTIME)
 	$$(TOOLCHAIN_EXTERNAL_GLIBC_NO_LIBCRYPT)
 	$$(TOOLCHAIN_EXTERNAL_INSTALL_WRAPPER)
 	$$(TOOLCHAIN_EXTERNAL_INSTALL_GDBINIT)
