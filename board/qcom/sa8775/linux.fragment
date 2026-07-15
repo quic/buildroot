@@ -15,3 +15,20 @@ CONFIG_INITRAMFS_SOURCE=""
 # rootwait blocks boot until the virtio-blk driver probes the device instead
 # of panicking with "VFS: Unable to mount root fs".
 CONFIG_CMDLINE="console=ttyAMA1 debug mem=892M lpj=89124080 root=/dev/vda rw rootwait"
+
+# Enable the common clock framework so the DT "apb-pclk" fixed-clock node --
+# which QEMU's virt machine emits as the PL011's "apb_pclk"/"uartclk" supplier
+# (clocks = <&apb-pclk>), exactly like the arm64 virt machine does -- actually
+# gets a driver (of_fixed_clk_setup) that binds it and registers the clock.
+#
+# Without COMMON_CLK there is no fixed-rate clock driver, so that platform
+# device sits permanently unbound (DL_DEV_NO_DRIVER). fw_devlink then blocks
+# the PL011 (its clock consumer) from probing until driver_deferred_probe_timeout
+# expires -- a fixed ~10s stall during which the console never comes up and all
+# of init/rcS runs with stdio redirected to /dev/null (hence no boot messages).
+# The interrupt-controller supplier link does NOT cause this: irq_domain
+# creation marks that fwnode FWNODE_FLAG_INITIALIZED, which fw_devlink honours.
+#
+# With COMMON_CLK the fixed-clock binds at ~1.5s and the PL011 probes right
+# after (~2.7s) instead of at ~12.7s.
+CONFIG_COMMON_CLK=y
