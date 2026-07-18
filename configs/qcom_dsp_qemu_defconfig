@@ -90,6 +90,12 @@ BR2_PACKAGE_MESA3D_RUSTICL=y
 # RustiCL exposes no devices unless RUSTICL_ENABLE names a driver at runtime,
 # e.g. `RUSTICL_ENABLE=llvmpipe clinfo`.
 BR2_PACKAGE_CLINFO=y
+# HVX vector unit and kernel HVX context save/restore stress test. Started
+# from board/qcom/sa8775/rootfs-overlay/etc/init.d/S99hvx-stress, but only
+# when "hvxstress[=N]" appears on the kernel command line, so ordinary boots
+# are unaffected. Requires CONFIG_HEXAGON_HVX=y in the kernel, which the
+# qemu_defconfig enables.
+BR2_PACKAGE_HVX_STRESS=y
 BR2_TARGET_ROOTFS_TAR_GZIP=y
 # The full rootfs is no longer embedded into the kernel as an initramfs.
 # Instead it is written to a persistent ext2 disk image that QEMU exposes as

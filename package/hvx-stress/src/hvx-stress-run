@@ -1,0 +1,160 @@
+#!/bin/sh
+#
+# Copyright (c) 2026, Qualcomm Innovation Center, Inc. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Drive the HVX stress suite: launch more workers than there are CPUs, run
+# every worker N times, and report a single strict verdict.
+#
+# Oversubscription is the point.  With twice as many workers as CPUs the
+# scheduler is forced to preempt workers mid-computation, and because the
+# kernel hands out only a small number of hardware HVX contexts (four on the
+# QEMU virt machine) the workers also contend for those, exercising context
+# reservation, stealing and restore rather than just steady-state execution.
+#
+# Exit status is 0 only if every worker exited 0.  Nothing here parses a
+# worker's output to decide pass or fail.
+
+set -u
+
+PROGRAM_NAME=$(basename "$0")
+
+ITERATIONS=${HVX_STRESS_ITERATIONS:-10}
+SEED=${HVX_STRESS_SEED:-1}
+YIELDS=${HVX_STRESS_YIELDS:-64}
+THREADS=${HVX_STRESS_THREADS:-2}
+WORKERS=${HVX_STRESS_WORKERS:-}
+LOGDIR=${HVX_STRESS_LOGDIR:-}
+
+usage()
+{
+	cat >&2 <<EOF
+usage: $PROGRAM_NAME [-n iterations] [-w workers] [-s seed] [-y yields]
+                     [-j threads-per-worker] [-l logdir]
+
+  -n  iterations per worker (default $ITERATIONS)
+  -w  concurrent workers (default: 2 x nproc)
+  -s  base seed (default $SEED)
+  -y  sched_yield calls per context-switch check (default $YIELDS)
+  -j  threads inside each context-switch worker (default $THREADS)
+  -l  directory for per-worker logs (default: a temporary directory)
+EOF
+	exit 2
+}
+
+while getopts "n:w:s:y:j:l:h" opt; do
+	case "$opt" in
+	n) ITERATIONS=$OPTARG ;;
+	w) WORKERS=$OPTARG ;;
+	s) SEED=$OPTARG ;;
+	y) YIELDS=$OPTARG ;;
+	j) THREADS=$OPTARG ;;
+	l) LOGDIR=$OPTARG ;;
+	*) usage ;;
+	esac
+done
+
+if [ -z "$WORKERS" ]; then
+	ncpu=$(nproc 2>/dev/null || echo 1)
+	WORKERS=$((ncpu * 2))
+fi
+[ "$WORKERS" -ge 1 ] || WORKERS=1
+
+if [ -z "$LOGDIR" ]; then
+	LOGDIR=$(mktemp -d /tmp/hvx-stress.XXXXXX) || exit 2
+	CLEANUP_LOGDIR=yes
+else
+	mkdir -p "$LOGDIR" || exit 2
+	CLEANUP_LOGDIR=no
+fi
+
+# Locate the binaries whether they are installed or sitting next to this
+# script in a build tree.
+here=$(dirname "$0")
+for candidate in "$here" /usr/bin /usr/libexec/hvx-stress; do
+	if [ -x "$candidate/hvx_kernels" ] && [ -x "$candidate/hvx_ctxsw" ]; then
+		BINDIR=$candidate
+		break
+	fi
+done
+if [ -z "${BINDIR:-}" ]; then
+	echo "$PROGRAM_NAME: cannot find hvx_kernels and hvx_ctxsw" >&2
+	echo "HVX-STRESS: FAIL (binaries not found)"
+	exit 1
+fi
+
+echo "$PROGRAM_NAME: $WORKERS workers x $ITERATIONS iterations" \
+     "on $(nproc 2>/dev/null || echo '?') cpu(s), seed $SEED"
+if [ -r /sys/class/hexagon_hvx/max_ctxts ]; then
+	echo "$PROGRAM_NAME: kernel reports" \
+	     "$(cat /sys/class/hexagon_hvx/max_ctxts) HVX context(s)"
+fi
+
+start=$(date +%s 2>/dev/null || echo 0)
+
+# Launch every worker up front so they overlap and contend.
+worker=0
+pidlist=""
+while [ "$worker" -lt "$WORKERS" ]; do
+	seed=$((SEED + worker * 7919))
+	log="$LOGDIR/worker-$worker.log"
+
+	# Alternate between the two workloads: the known-answer kernels keep
+	# the vector units busy with real work, while the context-switch
+	# workers repeatedly park a full register file across reschedules.
+	if [ $((worker % 2)) -eq 0 ]; then
+		"$BINDIR/hvx_kernels" -n "$ITERATIONS" -s "$seed" \
+			>"$log" 2>&1 &
+		name="hvx_kernels"
+	else
+		"$BINDIR/hvx_ctxsw" -n "$ITERATIONS" -s "$seed" \
+			-j "$THREADS" -y "$YIELDS" >"$log" 2>&1 &
+		name="hvx_ctxsw"
+	fi
+	pidlist="$pidlist $!:$worker:$name"
+	worker=$((worker + 1))
+done
+
+failed=0
+passed=0
+for entry in $pidlist; do
+	pid=${entry%%:*}
+	rest=${entry#*:}
+	idx=${rest%%:*}
+	name=${rest#*:}
+
+	# Capture the status directly: using "if ! wait ..." would replace the
+	# worker's real exit code with the negated test result.
+	wait "$pid"
+	status=$?
+
+	if [ "$status" -eq 0 ]; then
+		passed=$((passed + 1))
+	else
+		failed=$((failed + 1))
+		echo "$PROGRAM_NAME: worker $idx ($name) failed," \
+		     "exit $status" >&2
+		sed 's/^/    /' "$LOGDIR/worker-$idx.log" >&2
+	fi
+done
+
+end=$(date +%s 2>/dev/null || echo 0)
+elapsed=$((end - start))
+
+if [ "$failed" -eq 0 ]; then
+	echo "HVX-STRESS: PASS ($passed/$WORKERS workers," \
+	     "$ITERATIONS iterations, ${elapsed}s)"
+	rc=0
+else
+	echo "HVX-STRESS: FAIL ($failed/$WORKERS workers failed," \
+	     "$ITERATIONS iterations, ${elapsed}s)"
+	rc=1
+fi
+
+if [ "$CLEANUP_LOGDIR" = yes ] && [ "$failed" -eq 0 ]; then
+	rm -rf "$LOGDIR"
+else
+	echo "$PROGRAM_NAME: worker logs in $LOGDIR"
+fi
+
+exit $rc
