@@ -11,7 +11,12 @@ set -e
 
 IMAGES_DIR="$1"
 BUILD_DIR="$(dirname "${IMAGES_DIR}")/build"
-LINUX_DIR=$(find "${BUILD_DIR}" -maxdepth 1 -name 'linux-*' -type d | head -n1)
+
+# Stale build directories from earlier BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION
+# values (e.g. linux-hexagon-qemu-boot-14-july-2026) can linger alongside the
+# current one, so picking the alphabetically-first 'linux-*' match is not
+# reliable -- pick the one whose vmlinux was built most recently instead.
+LINUX_DIR=$(find "${BUILD_DIR}" -maxdepth 1 -name 'linux-*' -type d -exec test -f '{}/vmlinux' ';' -printf '%T@ %p\n' | sort -rn | head -n1 | cut -d' ' -f2-)
 
 if [[ -n "${LINUX_DIR}" && -f "${LINUX_DIR}/vmlinux" ]]; then
 	cp -a "${LINUX_DIR}/vmlinux" "${IMAGES_DIR}/vmlinux"
