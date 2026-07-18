@@ -12,6 +12,7 @@ sha256  b5539243f187e3d478d76d44ae13aab83952c94b885ad889df6fa9997e16a441  linux-
 sha256  407643fb973efc38f9754a2b957525694acd4cacbeddb2fdbeb2a9b0477a913a  linux-hexagon-qemu-boot-04-july-2026-git4.tar.gz
 sha256  bc1bec780e853902baf77b3c34d447b270a7c5ab190cda7fab30ded3464a5207  linux-hexagon-qemu-boot-04-july-2026.tar.gz
 sha256  d0097207500c7e81b37744ca82fdf8183e45141778c4e1e859daeae4db7987d9  linux-hexagon-qemu-boot-14-july-2026-git4.tar.gz
+sha256  b5eb15af31f3ffeaa4dd68494702302bcaa92a0710f2c31bd22b01f1a09c18fb  linux-hexagon-qemu-boot-17-july-2026-git4.tar.gz
 
 # Licenses hashes
 sha256  fb5a425bd3b3cd6071a3a9aff9909a859e7c1158d54d32e07658398cd67eb6a0  COPYING
