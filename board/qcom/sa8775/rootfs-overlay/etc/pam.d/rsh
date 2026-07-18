@@ -1,0 +1,11 @@
+# PAM config for in.rshd (rsh-redone).
+#
+# Upstream's sample (rsh-redone-85/pam/rsh) authenticates via
+# pam_rhosts.so (.rhosts/hosts.equiv trust), but that module isn't part of
+# Linux-PAM and isn't built here. rsh is only enabled as a fallback while
+# dropbear/ssh is broken by the hexagon compiler miscompile, so auth is
+# left wide open with pam_permit.so rather than pulling in a module to
+# recreate .rhosts semantics.
+auth		required	pam_permit.so
+account		required	pam_unix.so
+session		required	pam_unix.so
