@@ -1,0 +1,27 @@
+config BR2_PACKAGE_HVX_STRESS
+	bool "hvx-stress"
+	depends on BR2_hexagon
+	depends on BR2_HEXAGON_CPU_HAS_HVX
+	depends on BR2_TOOLCHAIN_USES_MUSL
+	depends on BR2_TOOLCHAIN_HAS_THREADS
+	help
+	  Stress test for the Hexagon HVX vector unit and for the kernel's
+	  HVX coprocessor context management.
+
+	  Provides two workers and a driver script:
+
+	    hvx_kernels     known-answer tests for the HVX datapath, each
+	                    checked lane by lane against a scalar reference
+	    hvx_ctxsw       parks a unique fingerprint in all 32 vector
+	                    registers and Q0-Q3 across many reschedules and
+	                    verifies it byte for byte afterwards
+	    hvx-stress-run  runs both with more workers than CPUs and
+	                    reports one strict pass/fail verdict
+
+	  Intended for validating QEMU's Hexagon HVX emulation and the
+	  kernel's context save/restore paths under scheduler pressure.
+
+comment "hvx-stress needs an HVX-capable cpu and a musl toolchain w/ threads"
+	depends on BR2_hexagon
+	depends on !BR2_HEXAGON_CPU_HAS_HVX || !BR2_TOOLCHAIN_USES_MUSL || \
+		!BR2_TOOLCHAIN_HAS_THREADS
