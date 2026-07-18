@@ -1,0 +1,5 @@
+# Dropbear is broken by a clang-23 hexagon -O2 SHA-512 miscompile (breaks
+# ed25519 SSH auth), so telnetd is enabled here as a fallback remote-login
+# path until the compiler bug is fixed.
+CONFIG_TELNETD=y
+CONFIG_FEATURE_TELNETD_STANDALONE=y
