@@ -6,11 +6,14 @@
 # Run the HVX stress suite at boot, but only when explicitly asked for on the
 # kernel command line, so ordinary boots are unaffected:
 #
-#   hvxstress          run with the default iteration count
-#   hvxstress=N        run N iterations per worker
-#   hvxstress.poweroff powers the machine off when finished, which under QEMU
-#                      exits the emulator (the kernel uses semihosting to exit
-#                      on power off)
+#   hvxstress             run with the default iteration count
+#   hvxstress=N           run N iterations per worker
+#   hvxstress.noshutdown  leave the system up afterwards instead of powering
+#                         off, for poking at it interactively after a failure
+#
+# When the run finishes the system is shut down cleanly, which under QEMU exits
+# the emulator (the kernel powers off via semihosting) -- so a CI invocation
+# needs no timeout and no way to drive the guest console.
 #
 # The verdict is printed to the console as a single HVX-STRESS: PASS or
 # HVX-STRESS: FAIL line.
@@ -21,7 +24,7 @@ start()
 {
 	cmdline=$(cat /proc/cmdline 2>/dev/null)
 	iterations=""
-	poweroff_when_done=no
+	shutdown_when_done=yes
 
 	for arg in $cmdline; do
 		case "$arg" in
@@ -31,31 +34,48 @@ start()
 		hvxstress=*)
 			iterations=${arg#hvxstress=}
 			;;
-		hvxstress.poweroff)
-			poweroff_when_done=yes
+		hvxstress.noshutdown)
+			shutdown_when_done=no
 			;;
 		esac
 	done
 
+	# No hvxstress on the command line: this is an ordinary boot, do nothing.
 	[ -n "$iterations" ] || exit 0
 
 	if ! [ -x /usr/bin/hvx-stress-run ]; then
 		echo "HVX-STRESS: FAIL (hvx-stress-run not installed)"
-		[ "$poweroff_when_done" = yes ] && poweroff
-		exit 1
+		finish 1
 	fi
 
 	echo "Starting HVX stress test ($iterations iterations)..."
 	/usr/bin/hvx-stress-run -n "$iterations"
-	rc=$?
+	finish $?
+}
 
-	if [ "$poweroff_when_done" = yes ]; then
-		# Give the console a moment to drain before the machine goes.
+# Report the verdict and, unless asked not to, bring the system down cleanly.
+#
+# This uses "poweroff" rather than "poweroff -f" so init runs the normal
+# shutdown sequence -- stopping services and unmounting the root filesystem --
+# before the machine goes.  An unclean stop would leave the ext2 root dirty,
+# which matters because the disk image persists across boots.  The kernel's
+# pm_power_off then exits QEMU via semihosting, so the emulator terminates on
+# its own with no external timeout needed.
+#
+# Note the QEMU exit status does not carry the result: the authority is the
+# single HVX-STRESS: PASS / HVX-STRESS: FAIL line on the console.
+finish()
+{
+	rc=$1
+
+	if [ "$shutdown_when_done" = yes ]; then
+		# Let the console drain before init starts tearing things down.
 		sync
+		echo "HVX stress test finished (rc=$rc), shutting down..."
 		poweroff
 	fi
 
-	return $rc
+	exit $rc
 }
 
 case "$1" in
