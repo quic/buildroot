@@ -64,35 +64,22 @@ BR2_PACKAGE_COREUTILS=y
 BR2_PACKAGE_COREMARK=y
 BR2_PACKAGE_HEXAGONMVM=n
 
-# Mesa3D with a software renderer (no GPU on the QEMU target): the llvmpipe
-# gallium driver provides OpenGL and the swrast (lavapipe) driver provides
-# Vulkan, both via the target-side LLVM. The earlier -latomic link failure
-# from libdrm is resolved now that BR2_TOOLCHAIN_HAS_LIBATOMIC is no longer
-# set for this clang toolchain (see toolchain/Config.in).
-BR2_PACKAGE_MESA3D=y
-BR2_PACKAGE_MESA3D_LLVM=y
-BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_LLVMPIPE=y
-BR2_PACKAGE_MESA3D_VULKAN_DRIVER_SWRAST=y
-# OpenCL via Mesa's RustiCL backend. RustiCL is written in Rust, so it
-# needs the Rust compiler to support the hexagon *target*. Hexagon is a
-# Rust Tier 3 platform (hexagon-unknown-linux-musl), which ships no
-# prebuilt rust-std -- so we must build the compiler and std from source
-# (BR2_PACKAGE_HOST_RUST) rather than use the prebuilt host-rust-bin.
-# Support for the target was added in package/rustc/Config.in.host and
-# package/rust/rust.mk (llvm-libunwind=in-tree, clang as target cc).
-BR2_PACKAGE_HOST_RUST=y
-BR2_PACKAGE_MESA3D_OPENCL=y
-BR2_PACKAGE_MESA3D_RUSTICL=y
-# clinfo enumerates the OpenCL platform/devices; handy for verifying RustiCL.
-# RustiCL exposes no devices unless RUSTICL_ENABLE names a driver at runtime,
-# e.g. `RUSTICL_ENABLE=llvmpipe clinfo`.
-BR2_PACKAGE_CLINFO=y
+# Mesa3D/LLVM/Rust (RustiCL OpenCL) are disabled for now -- rebuilding
+# without them to isolate the libc-test/hvx-stress bring-up from that much
+# larger, slower dependency chain.
+# BR2_PACKAGE_MESA3D is not set
+# BR2_PACKAGE_HOST_RUST is not set
+# BR2_PACKAGE_CLINFO is not set
 # HVX vector unit and kernel HVX context save/restore stress test. Started
 # from board/qcom/sa8775/rootfs-overlay/etc/init.d/S99hvx-stress, but only
 # when "hvxstress[=N]" appears on the kernel command line, so ordinary boots
 # are unaffected. Requires CONFIG_HEXAGON_HVX=y in the kernel, which the
 # qemu_defconfig enables.
 BR2_PACKAGE_HVX_STRESS=y
+# musl's own conformance/regression test suite, cross-built and installed
+# to /usr/lib/libc-test/ for the user to run on-target. See
+# package/libc-test/Config.in.
+BR2_PACKAGE_LIBC_TEST=y
 BR2_TARGET_ROOTFS_TAR_GZIP=y
 # The full rootfs is no longer embedded into the kernel as an initramfs.
 # Instead it is written to a persistent ext2 disk image that QEMU exposes as

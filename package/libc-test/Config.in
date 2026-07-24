@@ -1,0 +1,18 @@
+config BR2_PACKAGE_LIBC_TEST
+	bool "libc-test"
+	depends on BR2_TOOLCHAIN_USES_MUSL
+	depends on BR2_TOOLCHAIN_HAS_THREADS
+	help
+	  Rich Felker's libc-test conformance/regression test suite,
+	  developed alongside musl. Cross-built only: the host build
+	  compiles the functional/math/musl/regression test binaries and
+	  installs them under /usr/lib/libc-test/ on the target, but does
+	  not execute them (per-test build failures are recorded by the
+	  suite's own report mechanism rather than failing the package
+	  build). Run them on the target to get PASS/FAIL/BUILDERROR
+	  results for this libc/toolchain/kernel combination.
+
+	  http://repo.or.cz/libc-test
+
+comment "libc-test needs a musl toolchain w/ threads"
+	depends on !BR2_TOOLCHAIN_USES_MUSL || !BR2_TOOLCHAIN_HAS_THREADS
