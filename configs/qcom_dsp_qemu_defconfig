@@ -20,8 +20,6 @@ BR2_DOWNLOAD_FORCE_CHECK_HASHES=y
 BR2_ROOTFS_DEVICE_CREATION_STATIC=y
 BR2_ROOTFS_POST_BUILD_SCRIPT="board/qcom/sa8775/post_build.sh"
 BR2_ROOTFS_POST_IMAGE_SCRIPT="board/qcom/sa8775/post_image.sh"
-# Adds /etc/inetd.conf (rshd) and /etc/init.d/S49inetd -- see the rsh-redone
-# and busybox telnetd config below.
 BR2_ROOTFS_OVERLAY="board/qcom/sa8775/rootfs-overlay"
 BR2_PACKAGE_BUSYBOX_SHOW_OTHERS=y
 # Enables telnetd (see board/qcom/sa8775/busybox.fragment).
@@ -33,13 +31,12 @@ BR2_PACKAGE_LIBEVENT=n
 BR2_PACKAGE_ATFTP=n
 BR2_PACKAGE_DROPBEAR=y
 BR2_PACKAGE_LSH=y
-# Dropbear's SSH auth is broken by a clang-23 hexagon -O2 SHA-512
-# miscompile, so rsh/rshd (started via busybox inetd, see
-# board/qcom/sa8775/rootfs-overlay/etc/inetd.conf) is added as a fallback
-# remote-login path alongside telnetd.
-BR2_PACKAGE_RSH_REDONE=y
-BR2_PACKAGE_RSH_REDONE_RSH=y
-BR2_PACKAGE_RSH_REDONE_RSHD=y
+# rsh/rshd (rsh-redone) is dropped for now: it needs PAM, and linux-pam's
+# libpam.map version script uses dependent version nodes that the 22.1.8
+# toolchain's eld linker doesn't support (see ./libpam_eld_bug). telnetd
+# (board/qcom/sa8775/busybox.fragment) is the sole dropbear SSH fallback
+# for now.
+# BR2_PACKAGE_RSH_REDONE is not set
 
 BR2_PACKAGE_BASH=y
 BR2_PACKAGE_ZSH=y
