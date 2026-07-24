@@ -4,18 +4,15 @@ BR2_SHARED_LIBS=y
 BR2_TOOLCHAIN_EXTERNAL=y
 BR2_TOOLCHAIN_EXTERNAL_CUSTOM=y
 BR2_TOOLCHAIN_EXTERNAL_CLANG=y
-# Use a locally pre-installed clang+llvm 23.0.0 cross toolchain rather than
-# downloading one. The compilers live in <path>/bin, so no REL_BIN_PATH is
-# needed (buildroot looks in the "bin" subdirectory of the path by default).
-BR2_TOOLCHAIN_EXTERNAL_PREINSTALLED=y
-BR2_TOOLCHAIN_EXTERNAL_PATH="/home/brian/src/toolchain_for_hexagon/clang+llvm-23.0.0-cross-hexagon-unknown-linux-musl/x86_64-ubuntu-22.04"
+BR2_TOOLCHAIN_EXTERNAL_DOWNLOAD=y
+BR2_TOOLCHAIN_EXTERNAL_URL="https://artifacts.codelinaro.org/artifactory/codelinaro-toolchain-for-hexagon/22.1.8/clang+llvm-22.1.8-cross-hexagon-unknown-linux-musl.tar.zst"
+BR2_TOOLCHAIN_EXTERNAL_REL_BIN_PATH="x86_64-linux-gnu/bin"
 BR2_TOOLCHAIN_EXTERNAL_CUSTOM_PREFIX="hexagon-unknown-linux-musl"
 BR2_TOOLCHAIN_EXTERNAL_CLANG_21_0=y
 BR2_TOOLCHAIN_EXTERNAL_GCC_12=y
-# This toolchain ships only ld.lld (no ld.eld), and its hexagon lld support
-# is improved enough to be the default target linker. clang already defaults
-# to ld.lld here, so no -fuse-ld override is needed.
-BR2_TARGET_LDFLAGS="-fuse-ld=lld"
+# ld.lld is newer/less-tested for hexagon than ld.eld; use the eld linker for
+# target links (clang otherwise defaults to ld.lld for this toolchain).
+BR2_TARGET_LDFLAGS="-fuse-ld=eld"
 BR2_TOOLCHAIN_EXTERNAL_HEADERS_6_13=y
 BR2_TOOLCHAIN_EXTERNAL_CUSTOM_MUSL=y
 BR2_TOOLCHAIN_EXTERNAL_CXX=y
