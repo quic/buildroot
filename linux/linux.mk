@@ -180,9 +180,23 @@ ifeq ($(BR2_hexagon),y)
 # "$(CC) $(KBUILD_CFLAGS) -print-libgcc-file-name" without KBUILD_CPPFLAGS,
 # so plain "clang" resolves to the host's own clang/libgcc instead of the
 # hexagon one. Pointing CC directly at the cross clang sidesteps that.
+#
+# AR/NM/OBJCOPY/OBJDUMP/READELF/STRIP need the same treatment: LLVM=1 alone
+# defaults those to the unprefixed llvm-* names, which aren't on PATH here
+# (only the hexagon-unknown-linux-musl-* wrappers are installed to
+# $(HOST_DIR)/bin -- see toolchain/toolchain-external/pkg-toolchain-external.mk).
+# The wrappers are thin symlinks straight through to the real llvm-* tools
+# (e.g. hexagon-unknown-linux-musl-ar -> .../llvm-ar), so this is a rename,
+# not a behavior change.
 LINUX_MAKE_FLAGS += \
        LD='hexagon-unknown-linux-musl-ld.lld' \
-       CC='hexagon-unknown-linux-musl-clang'
+       CC='hexagon-unknown-linux-musl-clang' \
+       AR='hexagon-unknown-linux-musl-ar' \
+       NM='hexagon-unknown-linux-musl-nm' \
+       OBJCOPY='hexagon-unknown-linux-musl-objcopy' \
+       OBJDUMP='hexagon-unknown-linux-musl-objdump' \
+       READELF='hexagon-unknown-linux-musl-readelf' \
+       STRIP='hexagon-unknown-linux-musl-strip'
 endif
 
 
