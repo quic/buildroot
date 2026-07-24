@@ -32,3 +32,9 @@ CONFIG_CMDLINE="console=ttyAMA1 debug mem=892M lpj=89124080 root=/dev/vda rw roo
 # With COMMON_CLK the fixed-clock binds at ~1.5s and the PL011 probes right
 # after (~2.7s) instead of at ~12.7s.
 CONFIG_COMMON_CLK=y
+
+# Enable eBPF.
+CONFIG_BPF_SYSCALL=y
+CONFIG_BPF_JIT=y
+CONFIG_BPF_EVENTS=y
+CONFIG_CGROUP_BPF=y
