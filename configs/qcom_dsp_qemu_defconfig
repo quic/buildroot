@@ -95,6 +95,6 @@ BR2_TARGET_ROOTFS_EXT2_GZIP=y
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_GIT=y
 BR2_LINUX_KERNEL_CUSTOM_REPO_URL="https://git.kernel.org/pub/scm/linux/kernel/git/bcain/linux.git"
-BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="hexagon-qemu-boot-24-july-2026"
+BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="hexagon-qemu-boot-glink-24-july-2026"
 BR2_LINUX_KERNEL_DEFCONFIG="qemu"
 BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="board/qcom/sa8775/linux.fragment"
