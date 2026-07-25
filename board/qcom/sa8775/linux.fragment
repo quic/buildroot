@@ -38,3 +38,23 @@ CONFIG_BPF_SYSCALL=y
 CONFIG_BPF_JIT=y
 CONFIG_BPF_EVENTS=y
 CONFIG_CGROUP_BPF=y
+
+# GLINK-over-ivshmem inter-VM RPC stack.
+#
+# The ivshmem mailbox provides the doorbell/interrupt side, QCOM_SMEM the
+# shared-memory item allocator, and RPMSG_QCOM_GLINK_SMEM the GLINK transport
+# built on top of both. HWSPINLOCK(_QCOM) is a hard dependency of QCOM_SMEM,
+# which takes a hwspinlock around every SMEM allocation.
+CONFIG_MAILBOX=y
+CONFIG_IVSHMEM_MBOX=y
+CONFIG_HWSPINLOCK=y
+CONFIG_HWSPINLOCK_QCOM=y
+CONFIG_QCOM_SMEM=y
+CONFIG_RPMSG_QCOM_GLINK_SMEM=y
+CONFIG_RPMSG_ECHO=y
+CONFIG_RPMSG_NET=y
+CONFIG_FASTRPC_DEVICE=y
+
+# QRTR (Qualcomm IPC router) over the SMD/GLINK rpmsg transport.
+CONFIG_QRTR=y
+CONFIG_QRTR_SMD=y
