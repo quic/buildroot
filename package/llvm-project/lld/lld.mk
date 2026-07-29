@@ -28,4 +28,14 @@ endef
 
 HOST_LLD_POST_INSTALL_HOOKS += HOST_LLD_CREATE_SYMLINKS
 
+# For BR2_TOOLCHAIN_BUILDROOT_CLANG, host-lld doubles as TARGET_LD, invoked
+# via TARGET_CROSS = $(HOST_DIR)/bin/$(GNU_TARGET_NAME)- (see package/Makefile.in),
+# so it also needs to exist under its triple-prefixed name.
+ifeq ($(BR2_TOOLCHAIN_BUILDROOT_CLANG),y)
+define HOST_LLD_CREATE_TARGET_SYMLINK
+	ln -sfr $(HOST_DIR)/bin/lld $(HOST_DIR)/bin/$(GNU_TARGET_NAME)-ld.lld
+endef
+HOST_LLD_POST_INSTALL_HOOKS += HOST_LLD_CREATE_TARGET_SYMLINK
+endif
+
 $(eval $(host-cmake-package))

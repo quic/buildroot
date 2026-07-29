@@ -118,15 +118,28 @@ HOST_CLANG_CONF_OPTS += -DCLANG_PYTHON_BINDINGS_VERSIONS=$(PYTHON3_VERSION_MAJOR
 # Help host-clang to find our external toolchain, use a relative path from the clang
 # installation directory to the external toolchain installation directory in order to
 # not hardcode the toolchain absolute path.
+#
+# For BR2_TOOLCHAIN_BUILDROOT_CLANG, host-clang *is* the target compiler
+# (there's no separate external toolchain to locate), so only --target= is
+# needed to steer this multi-target binary at our GNU_TARGET_NAME.
+ifneq ($(BR2_TOOLCHAIN_EXTERNAL)$(BR2_TOOLCHAIN_BUILDROOT_CLANG),)
+HOST_CLANG_CFG_FILE = $(HOST_DIR)/lib/clang/$(CLANG_VERSION_MAJOR)/$(GNU_TARGET_NAME).cfg
+
 ifeq ($(BR2_TOOLCHAIN_EXTERNAL),y)
 define HOST_CLANG_INSTALL_CONFIG_FILE
 	mkdir -p $(HOST_DIR)/lib/clang/$(CLANG_VERSION_MAJOR)
-	echo "--gcc-install-dir=$$($(TARGET_CC) -print-search-dirs | awk -F ': ' '$$1=="install" {print $$2}')" > $(HOST_DIR)/lib/clang/$(CLANG_VERSION_MAJOR)/$(GNU_TARGET_NAME).cfg
-	echo "--target=$(GNU_TARGET_NAME)" >> $(HOST_DIR)/lib/clang/$(CLANG_VERSION_MAJOR)/$(GNU_TARGET_NAME).cfg
+	echo "--gcc-install-dir=$$($(TARGET_CC) -print-search-dirs | awk -F ': ' '$$1=="install" {print $$2}')" > $(HOST_CLANG_CFG_FILE)
+	echo "--target=$(GNU_TARGET_NAME)" >> $(HOST_CLANG_CFG_FILE)
 endef
+else
+define HOST_CLANG_INSTALL_CONFIG_FILE
+	mkdir -p $(HOST_DIR)/lib/clang/$(CLANG_VERSION_MAJOR)
+	echo "--target=$(GNU_TARGET_NAME)" > $(HOST_CLANG_CFG_FILE)
+endef
+endif
 
 HOST_CLANG_POST_INSTALL_HOOKS += HOST_CLANG_INSTALL_CONFIG_FILE
-HOST_CLANG_TOOLCHAIN_WRAPPER_ARGS += -DBR_CLANG_CONFIG_FILE="\"--config=$(HOST_DIR)/lib/clang/$(CLANG_VERSION_MAJOR)/$(GNU_TARGET_NAME).cfg\""
+HOST_CLANG_TOOLCHAIN_WRAPPER_ARGS += -DBR_CLANG_CONFIG_FILE="\"--config=$(HOST_CLANG_CFG_FILE)\""
 endif
 
 define HOST_CLANG_INSTALL_WRAPPER_AND_SIMPLE_SYMLINKS
@@ -139,6 +152,20 @@ define HOST_CLANG_INSTALL_WRAPPER_AND_SIMPLE_SYMLINKS
 		ln -snf clang-$(CLANG_VERSION_MAJOR).br_real $$i.br_real; \
 	done
 endef
+
+# For BR2_TOOLCHAIN_BUILDROOT_CLANG, host-clang doubles as TARGET_CC, invoked
+# via TARGET_CROSS = $(HOST_DIR)/bin/$(GNU_TARGET_NAME)- (see package/Makefile.in),
+# so it also needs to exist under its triple-prefixed name.
+ifeq ($(BR2_TOOLCHAIN_BUILDROOT_CLANG),y)
+define HOST_CLANG_INSTALL_TARGET_SYMLINKS
+	$(Q)cd $(HOST_DIR)/bin; \
+	for i in clang clang++; do \
+		ln -snf toolchain-wrapper-clang $(GNU_TARGET_NAME)-$$i; \
+		ln -snf clang-$(CLANG_VERSION_MAJOR).br_real $(GNU_TARGET_NAME)-$$i.br_real; \
+	done
+endef
+HOST_CLANG_POST_INSTALL_HOOKS += HOST_CLANG_INSTALL_TARGET_SYMLINKS
+endif
 
 define HOST_CLANG_TOOLCHAIN_WRAPPER_BUILD
 	$(HOSTCC) $(HOST_CFLAGS) $(TOOLCHAIN_WRAPPER_ARGS) \

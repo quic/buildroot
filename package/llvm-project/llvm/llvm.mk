@@ -314,6 +314,23 @@ define LLVM_COPY_LLVM_CONFIG_TO_STAGING_DIR
 endef
 HOST_LLVM_POST_INSTALL_HOOKS = LLVM_COPY_LLVM_CONFIG_TO_STAGING_DIR
 
+# For BR2_TOOLCHAIN_BUILDROOT_CLANG, host-clang/host-lld are TARGET_CC/LD,
+# invoked via TARGET_CROSS = $(HOST_DIR)/bin/$(GNU_TARGET_NAME)- (see
+# package/Makefile.in), so the other binutils-equivalent tools they rely on
+# (TARGET_AR/NM/RANLIB/READELF/OBJCOPY/OBJDUMP, and llvm-mc for TARGET_AS)
+# also need to exist under their triple-prefixed names. host-llvm already
+# builds these unprefixed in $(HOST_DIR)/bin (LLVM_BUILD_UTILS=ON above).
+ifeq ($(BR2_TOOLCHAIN_BUILDROOT_CLANG),y)
+define HOST_LLVM_CREATE_TARGET_SYMLINKS
+	$(Q)cd $(HOST_DIR)/bin; \
+	for i in ar nm ranlib readelf objcopy objdump strip; do \
+		ln -sfr llvm-$$i $(GNU_TARGET_NAME)-$$i; \
+	done; \
+	ln -sfr llvm-mc $(GNU_TARGET_NAME)-llvm-mc
+endef
+HOST_LLVM_POST_INSTALL_HOOKS += HOST_LLVM_CREATE_TARGET_SYMLINKS
+endif
+
 # The llvm-symbolizer binary is used by the Compiler-RT Fuzzer
 # and AddressSanitizer tools on the target for stack traces.
 # If we set -DLLVM_BUILD_TOOLS=ON this will also install the llvm-config
