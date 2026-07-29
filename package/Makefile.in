@@ -179,7 +179,7 @@ TARGET_LDFLAGS = $(call qstrip,$(BR2_TARGET_LDFLAGS))
 # "-z" to be passed and the "text" keyword to be dropped otherwise. Both
 # gcc and ld supports that, so it probably won't cause us problems.
 ifeq ($(BR2_TOOLCHAIN_USES_MUSL):$(BR2_STATIC_LIBS),y:)
-ifeq ($(BR2_TOOLCHAIN_EXTERNAL_CLANG),y)
+ifeq ($(BR2_TOOLCHAIN_USES_CLANG),y)
 TARGET_LDFLAGS += -Wl,-ztext
 else
 TARGET_LDFLAGS += -ztext
@@ -192,7 +192,7 @@ endif
 # version script covering the whole library API). Older lld / GNU ld just
 # ignored those, so restore that behavior for the hexagon lld toolchain to
 # avoid spurious configure-time failures.
-ifeq ($(BR2_hexagon):$(BR2_TOOLCHAIN_EXTERNAL_CLANG),y:y)
+ifeq ($(BR2_hexagon):$(BR2_TOOLCHAIN_USES_CLANG),y:y)
 TARGET_LDFLAGS += -Wl,--undefined-version
 endif
 
@@ -252,12 +252,12 @@ endif
 # gcc toolchain; a clang toolchain that declares a gcc-equivalent version
 # uses the plain ar/nm/ranlib (or llvm-* aliases) instead.
 ifeq ($(BR2_TOOLCHAIN_GCC_AT_LEAST_4_7),y)
-ifneq ($(BR2_TOOLCHAIN_EXTERNAL_CLANG),y)
+ifneq ($(BR2_TOOLCHAIN_USES_CLANG),y)
 TARGET_GCC_WRAPPERS_PREFIX = gcc-
 endif
 endif
 
-ifeq ($(BR2_TOOLCHAIN_EXTERNAL_CLANG),y)
+ifeq ($(BR2_TOOLCHAIN_USES_CLANG),y)
 TARGET_CC_SUFFIX=clang
 TARGET_CXX_SUFFIX=clang++
 TARGET_AS_SUFFIX=llvm-mc

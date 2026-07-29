@@ -73,7 +73,7 @@ MESA3D_CONF_OPTS += \
 
 # Clang external toolchains expose "<tuple>-clang" but no "<tuple>-gcc",
 # so rustc must invoke clang as the linker driver.
-ifeq ($(BR2_TOOLCHAIN_EXTERNAL_CLANG),y)
+ifeq ($(BR2_TOOLCHAIN_USES_CLANG),y)
 MESA3D_RUST_LD = $(TARGET_CROSS)clang
 else
 MESA3D_RUST_LD = $(TARGET_CROSS)gcc

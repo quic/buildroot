@@ -30,7 +30,7 @@ HOST_RUST_VERBOSITY = $(if $(VERBOSE),2,0)
 # wrappers (no "<tuple>-gcc"/"-g++"), so point rust's target C/C++
 # compilers at clang. The C++ compiler is required to build the target
 # libunwind from the in-tree LLVM sources for musl targets.
-ifeq ($(BR2_TOOLCHAIN_EXTERNAL_CLANG),y)
+ifeq ($(BR2_TOOLCHAIN_USES_CLANG),y)
 HOST_RUST_TARGET_CC = $(TARGET_CROSS)clang
 HOST_RUST_TARGET_CXX = $(TARGET_CROSS)clang++
 else
