@@ -36,6 +36,16 @@ config BR2_TOOLCHAIN_USES_MUSL
 	select BR2_TOOLCHAIN_HAS_THREADS_NPTL
 	select BR2_TOOLCHAIN_SUPPORTS_PIE if !BR2_STATIC_LIBS && !BR2_hexagon
 
+# Should be selected whenever the active toolchain's compiler is gcc,
+# regardless of which backend (buildroot-built or external) provides it
+config BR2_TOOLCHAIN_USES_GCC
+	bool
+
+# Should be selected whenever the active toolchain's compiler is clang,
+# regardless of which backend (buildroot-built or external) provides it
+config BR2_TOOLCHAIN_USES_CLANG
+	bool
+
 choice
 	prompt "Toolchain type"
 	help
@@ -903,6 +913,12 @@ config BR2_TOOLCHAIN_CLANG_AT_LEAST_19_0
 	bool
 config BR2_TOOLCHAIN_CLANG_AT_LEAST_20_0
 	bool
+config BR2_TOOLCHAIN_CLANG_AT_LEAST_21_0
+	bool
+config BR2_TOOLCHAIN_CLANG_AT_LEAST_22_0
+	bool
+config BR2_TOOLCHAIN_CLANG_AT_LEAST_23_0
+	bool
 
 # This order guarantees that the highest version is set, as kconfig
 # stops affecting a value on the first matching default.
@@ -924,6 +940,9 @@ config BR2_TOOLCHAIN_CLANG_AT_LEAST
 	default "18.0"	if BR2_TOOLCHAIN_CLANG_AT_LEAST_18_0
 	default "19.0"	if BR2_TOOLCHAIN_CLANG_AT_LEAST_19_0
 	default "20.0"	if BR2_TOOLCHAIN_CLANG_AT_LEAST_20_0
+	default "21.0"	if BR2_TOOLCHAIN_CLANG_AT_LEAST_21_0
+	default "22.0"	if BR2_TOOLCHAIN_CLANG_AT_LEAST_22_0
+	default "23.0"	if BR2_TOOLCHAIN_CLANG_AT_LEAST_23_0
 
 config BR2_TOOLCHAIN_HAS_MNAN_OPTION
 	bool
