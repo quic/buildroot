@@ -1,0 +1,2 @@
+# From https://artifacts.codelinaro.org/artifactory/codelinaro-toolchain-for-hexagon/23.1.0-rc1/SHA256SUMS:
+sha256 5812ae6cda1a933c8e0aad912d911723e02c63eeb7c4e518c8d42b5fdac698fc  clang+llvm-23.1.0-rc1-cross-hexagon-unknown-linux-musl.tar.zst
