@@ -5,14 +5,11 @@ BR2_TOOLCHAIN_EXTERNAL=y
 BR2_TOOLCHAIN_EXTERNAL_CUSTOM=y
 BR2_TOOLCHAIN_EXTERNAL_CLANG=y
 BR2_TOOLCHAIN_EXTERNAL_DOWNLOAD=y
-BR2_TOOLCHAIN_EXTERNAL_URL="https://artifacts.codelinaro.org/artifactory/codelinaro-toolchain-for-hexagon/22.1.8/clang+llvm-22.1.8-cross-hexagon-unknown-linux-musl.tar.zst"
-BR2_TOOLCHAIN_EXTERNAL_REL_BIN_PATH="x86_64-linux-gnu/bin"
+BR2_TOOLCHAIN_EXTERNAL_URL="https://artifacts.codelinaro.org/artifactory/codelinaro-toolchain-for-hexagon/23.1.0-rc1/clang+llvm-23.1.0-rc1-cross-hexagon-unknown-linux-musl.tar.zst"
+BR2_TOOLCHAIN_EXTERNAL_REL_BIN_PATH="x86_64-ubuntu-22.04/bin"
 BR2_TOOLCHAIN_EXTERNAL_CUSTOM_PREFIX="hexagon-unknown-linux-musl"
-BR2_TOOLCHAIN_EXTERNAL_CLANG_21_0=y
+BR2_TOOLCHAIN_EXTERNAL_CLANG_23_0=y
 BR2_TOOLCHAIN_EXTERNAL_GCC_12=y
-# ld.lld is newer/less-tested for hexagon than ld.eld; use the eld linker for
-# target links (clang otherwise defaults to ld.lld for this toolchain).
-BR2_TARGET_LDFLAGS="-fuse-ld=eld"
 BR2_TOOLCHAIN_EXTERNAL_HEADERS_6_13=y
 BR2_TOOLCHAIN_EXTERNAL_CUSTOM_MUSL=y
 BR2_TOOLCHAIN_EXTERNAL_CXX=y
@@ -32,10 +29,11 @@ BR2_PACKAGE_ATFTP=n
 BR2_PACKAGE_DROPBEAR=y
 BR2_PACKAGE_LSH=y
 # rsh/rshd (rsh-redone) is dropped for now: it needs PAM, and linux-pam's
-# libpam.map version script uses dependent version nodes that the 22.1.8
-# toolchain's eld linker doesn't support (see ./libpam_eld_bug). telnetd
-# (board/qcom/sa8775/busybox.fragment) is the sole dropbear SSH fallback
-# for now.
+# libpam.map version script uses dependent version nodes that the eld linker
+# in the 22.1.8 toolchain didn't support (see ./libpam_eld_bug). The 23.1.0-rc1
+# toolchain has no eld at all (ld.lld only), so this may no longer reproduce --
+# not re-tested yet. telnetd (board/qcom/sa8775/busybox.fragment) is the sole
+# dropbear SSH fallback for now.
 # BR2_PACKAGE_RSH_REDONE is not set
 
 BR2_PACKAGE_BASH=y
