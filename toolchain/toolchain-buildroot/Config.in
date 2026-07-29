@@ -21,6 +21,33 @@ config BR2_TOOLCHAIN_BUILDROOT_VENDOR
 	  If you're not sure, just leave the default "buildroot" value.
 
 choice
+	prompt "Compiler"
+	default BR2_TOOLCHAIN_BUILDROOT_GCC
+
+config BR2_TOOLCHAIN_BUILDROOT_GCC
+	bool "gcc"
+	select BR2_TOOLCHAIN_USES_GCC
+	help
+	  Build a gcc + GNU binutils cross-compilation toolchain from
+	  source.
+
+config BR2_TOOLCHAIN_BUILDROOT_CLANG
+	bool "clang (experimental)"
+	depends on BR2_PACKAGE_LLVM_ARCH_SUPPORTS
+	select BR2_TOOLCHAIN_USES_CLANG
+	select BR2_TOOLCHAIN_USES_MUSL
+	help
+	  Build a clang + lld cross-compilation toolchain from source,
+	  for architectures with no gcc/GNU-binutils backend (e.g.
+	  Hexagon). There is no from-source C library support for this
+	  option yet: a prebuilt musl sysroot is dragged in instead (see
+	  package/toolchain-buildroot-hexagon-sysroot).
+
+endchoice
+
+if BR2_TOOLCHAIN_BUILDROOT_GCC
+
+choice
 	prompt "C library"
 	default BR2_TOOLCHAIN_BUILDROOT_GLIBC
 
@@ -102,12 +129,6 @@ config BR2_TOOLCHAIN_BUILDROOT_NONE
 
 endchoice
 
-config BR2_TOOLCHAIN_BUILDROOT_LIBC
-	string
-	default "uclibc" if BR2_TOOLCHAIN_BUILDROOT_UCLIBC
-	default "glibc"  if BR2_TOOLCHAIN_BUILDROOT_GLIBC
-	default "musl"	 if BR2_TOOLCHAIN_BUILDROOT_MUSL
-
 source "package/linux-headers/Config.in.host"
 source "package/linux-headers/Config.in"
 source "package/musl/Config.in"
@@ -116,4 +137,14 @@ source "package/glibc/Config.in"
 source "package/binutils/Config.in.host"
 source "package/gcc/Config.in.host"
 source "package/gcc/Config.in"
-endif
+
+endif # BR2_TOOLCHAIN_BUILDROOT_GCC
+
+config BR2_TOOLCHAIN_BUILDROOT_LIBC
+	string
+	default "uclibc" if BR2_TOOLCHAIN_BUILDROOT_UCLIBC
+	default "glibc"  if BR2_TOOLCHAIN_BUILDROOT_GLIBC
+	default "musl"	 if BR2_TOOLCHAIN_BUILDROOT_MUSL
+	default "musl"	 if BR2_TOOLCHAIN_BUILDROOT_CLANG
+
+endif # BR2_TOOLCHAIN_BUILDROOT
