@@ -13,11 +13,35 @@ LLD_LICENSE_FILES = LICENSE.TXT
 LLD_SUBDIR = lld
 LLD_SUPPORTS_IN_SOURCE_BUILD = NO
 HOST_LLD_DEPENDENCIES = host-llvm host-llvm-libunwind
+LLD_DEPENDENCIES = llvm
 
 # build as static libs as is done in llvm & clang
 HOST_LLD_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
+LLD_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 
 HOST_LLD_CONF_OPTS += -DLLVM_COMMON_CMAKE_UTILS=$(HOST_DIR)/lib/cmake/llvm
+LLD_CONF_OPTS += -DLLVM_COMMON_CMAKE_UTILS=$(HOST_DIR)/lib/cmake/llvm
+
+LLD_CONF_OPTS += \
+	-DCMAKE_CROSSCOMPILING=1 \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_MODULE_PATH=$(HOST_DIR)/lib/cmake/llvm \
+	-DLLVM_DIR=$(STAGING_DIR)/usr/lib/cmake/llvm \
+	-DLLVM_MAIN_SRC_DIR=$(BUILD_DIR)/llvm-$(LLVM_PROJECT_VERSION) \
+	-DLLVM_TABLEGEN_EXE:FILEPATH=$(HOST_DIR)/bin/llvm-tblgen
+
+# Link ld.lld against the target libLLVM.so dylib built by llvm.mk, rather
+# than statically pulling in every LLVM component it touches.
+LLD_CONF_OPTS += \
+	-DLLVM_LINK_LLVM_DYLIB=ON \
+	-DLLVM_DYLIB_COMPONENTS=all
+
+# lld's default install path expects a plain "ld" for tools (e.g. clang)
+# that don't pass -fuse-ld=lld explicitly.
+define LLD_INSTALL_TARGET_SYMLINK
+	ln -sf ld.lld $(TARGET_DIR)/usr/bin/ld
+endef
+LLD_POST_INSTALL_TARGET_HOOKS += LLD_INSTALL_TARGET_SYMLINK
 
 # GCC looks for tools in a different path from LLD's default installation path
 define HOST_LLD_CREATE_SYMLINKS
@@ -38,4 +62,5 @@ endef
 HOST_LLD_POST_INSTALL_HOOKS += HOST_LLD_CREATE_TARGET_SYMLINK
 endif
 
+$(eval $(cmake-package))
 $(eval $(host-cmake-package))

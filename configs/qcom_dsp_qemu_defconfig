@@ -72,6 +72,13 @@ BR2_PACKAGE_HEXAGONMVM=n
 # are unaffected. Requires CONFIG_HEXAGON_HVX=y in the kernel, which the
 # qemu_defconfig enables.
 BR2_PACKAGE_HVX_STRESS=y
+# On-target clang/lld toolchain: lets the booted rootfs itself compile and
+# link code, rather than only being a build artifact of the host build.
+BR2_PACKAGE_LLVM=y
+BR2_PACKAGE_CLANG=y
+BR2_PACKAGE_CLANG_TARGET_COMPILER=y
+BR2_PACKAGE_LLD=y
+BR2_PACKAGE_HEXAGON_TARGET_DEVEL=y
 # musl's own conformance/regression test suite, cross-built and installed
 # to /usr/lib/libc-test/ for the user to run on-target. See
 # package/libc-test/Config.in.

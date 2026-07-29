@@ -16,6 +16,21 @@ config BR2_PACKAGE_CLANG
 
 	  http://clang.llvm.org
 
+config BR2_PACKAGE_CLANG_TARGET_COMPILER
+	bool "install clang as an on-target compiler"
+	depends on BR2_PACKAGE_CLANG
+	default n
+	help
+	  By default, clang's compiler binaries and resource directory
+	  (compiler-rt/builtins) are removed from the target since there
+	  are normally no development files (headers, static libs, linker)
+	  available on target to make use of them.
+
+	  Enable this option to keep clang usable as a self-hosted,
+	  on-target compiler. You will typically also need a target
+	  linker (e.g. BR2_PACKAGE_LLD) and C library development files
+	  installed on target for this to be useful.
+
 comment "clang needs a toolchain w/ wchar, threads, C++, gcc >= 7, dynamic library, host gcc >= 7"
 	depends on BR2_PACKAGE_LLVM_ARCH_SUPPORTS
 	depends on !BR2_TOOLCHAIN_HAS_THREADS || !BR2_INSTALL_LIBSTDCPP || \

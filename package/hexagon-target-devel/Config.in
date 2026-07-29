@@ -1,0 +1,15 @@
+config BR2_PACKAGE_HEXAGON_TARGET_DEVEL
+	bool "hexagon target devel files (headers, static libs, CRT objects)"
+	depends on BR2_hexagon
+	depends on BR2_TOOLCHAIN_EXTERNAL_CLANG
+	help
+	  Installs the C/C++ library development files (musl headers,
+	  libc++/libunwind headers, static libraries, compiler-rt runtime
+	  libraries and CRT startup objects) from the external toolchain's
+	  staging directory onto the target.
+
+	  These files are what let an on-target compiler (e.g.
+	  BR2_PACKAGE_CLANG_TARGET_COMPILER) and linker (e.g.
+	  BR2_PACKAGE_LLD) actually compile and link code from within the
+	  booted rootfs, rather than only being usable as build artifacts
+	  of the host build.

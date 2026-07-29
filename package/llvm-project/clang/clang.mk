@@ -74,9 +74,12 @@ CLANG_CONF_OPTS += -DLLVM_MAIN_SRC_DIR=$(BUILD_DIR)/llvm-$(LLVM_PROJECT_VERSION)
 
 # Clang can't be used as compiler on the target since there are no
 # development files (headers) and other build tools. So remove clang
-# binaries and some other unnecessary files from target.
+# binaries and some other unnecessary files from target, unless the
+# user explicitly opted in to using clang as an on-target compiler
+# (BR2_PACKAGE_CLANG_TARGET_COMPILER), in which case keep the compiler
+# binaries and its resource directory (compiler-rt/builtins), but still
+# strip the dev-tooling extras a bare on-target compiler doesn't need.
 CLANG_FILES_TO_REMOVE = \
-	/usr/bin/clang* \
 	/usr/bin/c-index-test \
 	/usr/bin/git-clang-format \
 	/usr/bin/scan-build \
@@ -87,8 +90,13 @@ CLANG_FILES_TO_REMOVE = \
 	/usr/share/opt-viewer \
 	/usr/share/scan-build \
 	/usr/share/scan-view \
-	/usr/share/man/man1/scan-build.1 \
+	/usr/share/man/man1/scan-build.1
+
+ifneq ($(BR2_PACKAGE_CLANG_TARGET_COMPILER),y)
+CLANG_FILES_TO_REMOVE += \
+	/usr/bin/clang* \
 	/usr/lib/clang
+endif
 
 define CLANG_CLEANUP_TARGET
 	rm -rf $(addprefix $(TARGET_DIR),$(CLANG_FILES_TO_REMOVE))
