@@ -196,6 +196,10 @@ ifeq ($(BR2_hexagon):$(BR2_TOOLCHAIN_USES_CLANG),y:y)
 TARGET_LDFLAGS += -Wl,--undefined-version
 endif
 
+ifeq ($(BR2_HEXAGON_USE_ELD),y)
+TARGET_LDFLAGS += -fuse-ld=eld
+endif
+
 # By design, _FORTIFY_SOURCE requires gcc optimization to be enabled.
 # Therefore, we need to pass _FORTIFY_SOURCE and the optimization level
 # through the same mechanism, i.e currently through CFLAGS. Passing

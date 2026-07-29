@@ -360,6 +360,17 @@ config BR2_TARGET_LDFLAGS
 	  Note that options with a '$' sign (eg.
 	  -Wl,-rpath='$ORIGIN/../lib') are not supported.
 
+config BR2_HEXAGON_USE_ELD
+	bool "Use the eld linker instead of ld.lld"
+	depends on BR2_hexagon && BR2_TOOLCHAIN_USES_CLANG
+	help
+	  The CodeLinaro Hexagon clang+llvm releases ship both ld.lld
+	  and eld (a Qualcomm-maintained ELF linker with additional
+	  Hexagon-specific support). Clang defaults to ld.lld for this
+	  toolchain; select this option to pass -fuse-ld=eld instead.
+
+	  If unsure, leave this at its default (off), which uses lld.
+
 # Options for packages to depend on, if they require at least a
 # specific version of the kernel headers.
 # Toolchains should choose the adequate option (ie. the highest

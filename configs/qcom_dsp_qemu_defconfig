@@ -30,10 +30,11 @@ BR2_PACKAGE_DROPBEAR=y
 BR2_PACKAGE_LSH=y
 # rsh/rshd (rsh-redone) is dropped for now: it needs PAM, and linux-pam's
 # libpam.map version script uses dependent version nodes that the eld linker
-# in the 22.1.8 toolchain didn't support (see ./libpam_eld_bug). The 23.1.0-rc1
-# toolchain has no eld at all (ld.lld only), so this may no longer reproduce --
-# not re-tested yet. telnetd (board/qcom/sa8775/busybox.fragment) is the sole
-# dropbear SSH fallback for now.
+# in the 22.1.8 toolchain didn't support (see ./libpam_eld_bug). This defconfig
+# now uses ld.lld by default (BR2_HEXAGON_USE_ELD is off), which doesn't have
+# this bug, but hasn't been re-tested with rsh-redone yet. telnetd
+# (board/qcom/sa8775/busybox.fragment) is the sole dropbear SSH fallback for
+# now.
 # BR2_PACKAGE_RSH_REDONE is not set
 
 BR2_PACKAGE_BASH=y
